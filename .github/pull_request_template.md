@@ -1,3 +1,10 @@
+---
+name: "PR Form"
+about: Pull Request
+title: "[Feat] "
+labels: 
+---
+
 > ### 🔍 관련 이슈
 <!-- 연결된 이슈 번호를 적어주세요 (예: closes #45) -->
 - closes #
