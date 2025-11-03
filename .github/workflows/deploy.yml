@@ -21,15 +21,15 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Build Spring Boot jar
-        run: |
-          chmod +x ./gradlew
-          ./gradlew clean build -x test
-
       - name: Create application.yml
         run: |
           mkdir -p ./src/main/resources
           echo "${{ secrets.APPLICATION }}" > ./src/main/resources/application.yml
+
+      - name: Build Spring Boot jar
+        run: |
+          chmod +x ./gradlew
+          ./gradlew clean build -x test
 
       - name: Check if application.yml exists
         run: test -f ./src/main/resources/application.yml && echo "File exists" || echo "File does not exist"
