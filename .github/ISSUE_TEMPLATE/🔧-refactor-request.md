@@ -1,3 +1,12 @@
+---
+name: "\U0001F527 Refactor Request"
+about: 개선 관련 이슈
+title: "[Refactor]"
+labels: refactor
+assignees: ''
+
+---
+
 > ### 🔧 리팩터링 대상
 <!-- 어떤 부분을 리팩터링하려는지 간단히 설명해주세요. -->
 - 
