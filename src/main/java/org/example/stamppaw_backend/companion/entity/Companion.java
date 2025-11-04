@@ -32,6 +32,8 @@ public class Companion extends BasicTimeEntity {
     @Enumerated(EnumType.STRING)
     private RecruitmentStatus status;
 
+    private String imageUrl;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "writer_id", nullable = false)
     private User user;

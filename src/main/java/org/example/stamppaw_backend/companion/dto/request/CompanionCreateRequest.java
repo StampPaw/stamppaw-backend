@@ -3,6 +3,7 @@ package org.example.stamppaw_backend.companion.dto.request;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 public class CompanionCreateRequest {
@@ -13,5 +14,7 @@ public class CompanionCreateRequest {
     @NotBlank(message = "내용을 입력하세요.")
     @Size(max = 2200, message = "내용이 최대 길이를 넘었습니다.")
     private String content;
+
+    private MultipartFile image;
 
 }

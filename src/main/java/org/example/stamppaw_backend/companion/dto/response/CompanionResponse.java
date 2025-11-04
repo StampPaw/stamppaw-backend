@@ -17,6 +17,7 @@ public class CompanionResponse {
     private Long id;
     private String title;
     private String content;
+    private String image;
     private LocalDateTime registeredAt;
     private LocalDateTime modifiedAt;
     private RecruitmentStatus status;
@@ -26,6 +27,7 @@ public class CompanionResponse {
                 .id(companion.getId())
                 .title(companion.getTitle())
                 .content(companion.getContent())
+                .image(companion.getImageUrl())
                 .registeredAt(companion.getRegisteredAt())
                 .modifiedAt(companion.getModifiedAt())
                 .status(companion.getStatus())

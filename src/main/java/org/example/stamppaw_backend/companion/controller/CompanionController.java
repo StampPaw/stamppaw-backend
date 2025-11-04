@@ -18,7 +18,7 @@ public class CompanionController {
     private final CompanionService companionService;
 
     @PostMapping
-    public CompanionResponse createCompanion(@Valid @RequestBody CompanionCreateRequest request) {
+    public CompanionResponse createCompanion(@Valid CompanionCreateRequest request) {
         return companionService.createCompanion(request);
     }
 

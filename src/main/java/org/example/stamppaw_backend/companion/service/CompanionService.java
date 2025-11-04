@@ -1,6 +1,7 @@
 package org.example.stamppaw_backend.companion.service;
 
 import lombok.RequiredArgsConstructor;
+import org.example.stamppaw_backend.common.S3Service;
 import org.example.stamppaw_backend.common.exception.ErrorCode;
 import org.example.stamppaw_backend.common.exception.StampPawException;
 import org.example.stamppaw_backend.companion.dto.request.CompanionCreateRequest;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class CompanionService {
     private final CompanionRepository companionRepository;
+    private final S3Service s3Service;
 
     public CompanionResponse createCompanion(CompanionCreateRequest request) {
         User user = User.builder()
@@ -27,6 +29,7 @@ public class CompanionService {
                 Companion.builder()
                         .title(request.getTitle())
                         .content(request.getContent())
+                        .imageUrl(s3Service.uploadFileAndGetUrl(request.getImage()))
                         .user(user)
                         .build()
         );
