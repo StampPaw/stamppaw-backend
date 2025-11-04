@@ -48,8 +48,8 @@ public class ProductCreateRequest {
     @AllArgsConstructor
     @Builder
     public static class ImageDto {
-        /** 스토리지 URL 또는 공개 URL */
-        @NotBlank
+
+        //@NotBlank 스토리지 URL 또는 공개 URL
         @Size(max = 2048)
         private String imageUrl;
 
@@ -65,15 +65,14 @@ public class ProductCreateRequest {
     @Builder
     public static class OptionDto {
 
-        @NotBlank
+        //@NotBlank
         @Size(max = 100)
         private String name;
 
-        @NotBlank
+       // @NotBlank
         @Size(max = 100)
         private String value;
 
-        @NotNull
         @Digits(integer = 16, fraction = 2)
         @PositiveOrZero
         @Builder.Default

@@ -5,16 +5,22 @@
 <div th:fragment="content">
 
   <div class="page-header">
-    <h1>상품 등록</h1>
-    <div>
-      <a th:href="@{/admin/products}" class="btn-secondary">목록</a>
-    </div>
+    <h2>상품 등록</h2>
   </div>
 
   <form th:action="@{/admin/products}" th:object="${form}" method="post" class="admin-form">
+    <!-- 에러 요약: 필드명 + 메시지 출력 -->
     <div th:if="${#fields.hasErrors('*')}" class="form-error">
-      입력값을 확인하세요.
+      <strong>입력값을 확인하세요.</strong>
+      <ul class="error-list">
+        <li th:each="err : ${#fields.detailedErrors()}">
+          <span class="error-field" th:text="${err.fieldName != null ? err.fieldName : 'global'}"></span>
+          :
+          <span class="error-msg" th:text="${err.message}"></span>
+        </li>
+      </ul>
     </div>
+
 
     <!-- 기본 정보 -->
     <section class="card">
@@ -22,7 +28,7 @@
         <div>
           <label>카테고리</label>
           <select th:field="*{category}" required>
-            <option value="" disabled selected>선택</option>
+            <!--option value="" disabled selected>선택</option-->
             <option th:each="c : ${categories}" th:value="${c}" th:text="${c}"></option>
           </select>
           <div th:if="${#fields.hasErrors('category')}" th:errors="*{category}" class="err"></div>
@@ -31,7 +37,7 @@
         <div>
           <label>상태</label>
           <select th:field="*{status}">
-            <option value="" selected>자동(기본값)</option>
+            <!--option value="" selected>자동(기본값)</option-->
             <option th:each="s : ${statuses}" th:value="${s}" th:text="${s}"></option>
           </select>
         </div>
@@ -50,12 +56,12 @@
 
         <div class="col-span-2">
           <label>설명</label>
-          <textarea th:field="*{description}" rows="5" placeholder="상품 설명을 입력하세요"></textarea>
+          <textarea th:field="*{description}" rows="3" placeholder="상품 설명을 입력하세요"></textarea>
         </div>
       </div>
     </section>
 
-    <!-- 이미지: 5개 고정 (loop) -->
+    <!-- 이미지: 고정 (loop) -->
     <section class="card">
       <div class="section-title">
         <h3>이미지</h3>
@@ -67,7 +73,7 @@
         <tr><th>URL</th><th>대표</th><th>정렬</th><th>업로드</th></tr>
         </thead>
         <tbody>
-        <tr th:each="i : ${#numbers.sequence(0,4)}">
+        <tr th:each="i : ${#numbers.sequence(0,2)}">
           <td>
             <input type="text" th:field="*{images[__${i}__].imageUrl}" placeholder="https://..."/>
           </td>
@@ -105,7 +111,7 @@
         <tr><th>이름</th><th>값 (쉼표로 구분)</th><th>추가금</th></tr>
         </thead>
         <tbody>
-        <tr th:each="i : ${#numbers.sequence(0,4)}">
+        <tr th:each="i : ${#numbers.sequence(0,2)}">
           <td><input type="text" th:field="*{options[__${i}__].name}" placeholder="SIZE"/></td>
           <td><input type="text" th:field="*{options[__${i}__].value}" placeholder="S,M,L,XL"/></td>
           <td><input type="number" step="0.01" th:field="*{options[__${i}__].extraPrice}" min="0" value="0"/></td>

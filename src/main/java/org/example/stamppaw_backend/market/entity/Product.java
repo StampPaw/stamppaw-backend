@@ -68,6 +68,6 @@ public class Product {
         if (status == null) status = ProductStatus.READY; // 기본값 보장(선택)
         createdAt = LocalDateTime.now();
     }
-    @PreUpdate  void preUpdate(){ updatedAt = LocalDateTime.now(); }
+
 }
 

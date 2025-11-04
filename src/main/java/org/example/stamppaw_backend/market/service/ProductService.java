@@ -23,41 +23,52 @@ public class ProductService {
     public Long createProduct(ProductCreateRequest req) {
 
         Product p = new Product();
-        p.setCategory(req.getCategory());  //확인
+        p.setCategory(req.getCategory());
         p.setName(req.getName());
         p.setDescription(req.getDescription());
         p.setPrice(req.getPrice());
-
         p.setStatus(req.getStatus() != null ? req.getStatus() : ProductStatus.READY);
 
         // 상품 이미지
-        int idx = 0;
-        boolean hasMain = false;
-        for (var dto : req.getImages()) {
-            ProductImage img = new ProductImage();
-            img.setImageUrl(dto.getImageUrl());
-            // null 방지 + 첫 이미지를 대표로
-            boolean isMain = (dto.getIsMain() != null ? dto.getIsMain() : false);
-            if (!hasMain && (isMain || idx == 0)) {
-                isMain = true;
-                hasMain = true;
+        if (req.getImages() != null && !req.getImages().isEmpty()) {
+            int idx = 0;
+            boolean hasMain = false;
+            for (var dto : req.getImages()) {
+                // URL 없으면 스킵
+                if (dto.getImageUrl() == null || dto.getImageUrl().isBlank()) continue;
+
+                ProductImage img = new ProductImage();
+                img.setImageUrl(dto.getImageUrl());
+
+                boolean isMain = (dto.getIsMain() != null ? dto.getIsMain() : false);
+                if (!hasMain && (isMain || idx == 0)) {
+                    isMain = true;
+                    hasMain = true;
+                }
+                img.setMain(isMain);
+                img.setSort(dto.getSort() != null ? dto.getSort() : idx);
+                p.addImage(img);
+                idx++;
             }
-            img.setMain(isMain);
-            img.setSort(dto.getSort() != null ? dto.getSort() : idx);
-            p.addImage(img);
-            idx++;
         }
 
         // 상품 옵션
-        for (var dto : req.getOptions()) {
-            ProductOption opt = new ProductOption();
-            opt.setName(dto.getName());
-            opt.setValue(dto.getValue());
-            opt.setExtraPrice(dto.getExtraPrice() != null ? dto.getExtraPrice() : BigDecimal.ZERO);
-            p.addOption(opt);
+        if (req.getOptions() != null && !req.getOptions().isEmpty()) {
+            for (var dto : req.getOptions()) {
+                // 이름/값 모두 비어있으면 스킵
+                if ((dto.getName() == null || dto.getName().isBlank()) &&
+                        (dto.getValue() == null || dto.getValue().isBlank())) {
+                    continue;
+                }
+
+                ProductOption opt = new ProductOption();
+                opt.setName(dto.getName());
+                opt.setValue(dto.getValue());
+                opt.setExtraPrice(dto.getExtraPrice() != null ? dto.getExtraPrice() : BigDecimal.ZERO);
+                p.addOption(opt);
+            }
         }
 
-        // 저장
         return productRepository.save(p).getId();
     }
 
@@ -66,3 +77,4 @@ public class ProductService {
         return productRepository.findAll(pageable);
     }
 }
+
