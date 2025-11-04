@@ -41,7 +41,7 @@ public class ProductService {
                 img.setImageUrl(dto.getImageUrl());
 
                 boolean isMain = (dto.getIsMain() != null ? dto.getIsMain() : false);
-                if (!hasMain && (isMain || idx == 0)) {
+                if (!hasMain && (isMain || idx == 0)) { //작업시 조건 확인
                     isMain = true;
                     hasMain = true;
                 }

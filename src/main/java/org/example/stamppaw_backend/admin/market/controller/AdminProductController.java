@@ -39,7 +39,7 @@ public class AdminProductController {
         Long id = productService.createProduct(form);
 
         redirect.addFlashAttribute("message", "상품이 등록되었습니다. (#" + id + ")");
-        return "redirect:/admin/market/product-list";
+        return "redirect:/admin/products";
     }
 
     /** 폼에 공통으로 내려줄 enum 목록 */
