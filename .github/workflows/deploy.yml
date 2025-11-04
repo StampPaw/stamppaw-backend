@@ -49,7 +49,7 @@ jobs:
         run: |
           docker build --build-arg DEPENDENCY=build/dependency -t ${{ secrets.DOCKER_USERNAME }}/stamppaw --platform linux/amd64 .
           docker push ${{ secrets.DOCKER_USERNAME }}/stamppaw:latest
-          
+
       - name: Deploy via SSH to EC2
         uses: appleboy/ssh-action@v1.1.0
         with:

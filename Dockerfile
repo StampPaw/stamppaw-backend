@@ -1,5 +1,5 @@
 # jdk17 Image Start
-FROM openjdk:17
+FROM eclipse-temurin:17-jdk
 
 # jar 파일 복제
 COPY ./build/libs/stamppaw_backend-0.0.1-SNAPSHOT.jar stamppaw_backend.jar
