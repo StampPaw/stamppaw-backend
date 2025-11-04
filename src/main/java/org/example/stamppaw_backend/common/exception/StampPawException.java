@@ -1,4 +1,10 @@
 package org.example.stamppaw_backend.common.exception;
 
-public class StampPawException {
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
+public class StampPawException extends RuntimeException {
+    ErrorCode errorCode;
 }
