@@ -47,7 +47,7 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/stamppaw:latest .
+          docker build --platform linux/amd64 -t ${{ secrets.DOCKER_USERNAME }}/stamppaw:latest .
           docker push ${{ secrets.DOCKER_USERNAME }}/stamppaw:latest
 
       - name: Deploy via SSH to EC2
