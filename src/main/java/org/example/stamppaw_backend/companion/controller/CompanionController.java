@@ -5,10 +5,12 @@ import lombok.RequiredArgsConstructor;
 import org.example.stamppaw_backend.companion.dto.request.CompanionCreateRequest;
 import org.example.stamppaw_backend.companion.dto.response.CompanionResponse;
 import org.example.stamppaw_backend.companion.service.CompanionService;
+import org.example.stamppaw_backend.user.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,8 +20,8 @@ public class CompanionController {
     private final CompanionService companionService;
 
     @PostMapping
-    public CompanionResponse createCompanion(@Valid CompanionCreateRequest request) {
-        return companionService.createCompanion(request);
+    public CompanionResponse createCompanion(@Valid CompanionCreateRequest request, @AuthenticationPrincipal User user) {
+        return companionService.createCompanion(request, user.getId());
     }
 
     @GetMapping

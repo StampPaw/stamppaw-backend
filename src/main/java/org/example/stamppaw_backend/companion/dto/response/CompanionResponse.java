@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.example.stamppaw_backend.companion.entity.Companion;
 import org.example.stamppaw_backend.companion.entity.RecruitmentStatus;
+import org.example.stamppaw_backend.user.dto.UserDto;
+import org.example.stamppaw_backend.user.entity.User;
 
 import java.time.LocalDateTime;
 
@@ -21,6 +23,8 @@ public class CompanionResponse {
     private LocalDateTime registeredAt;
     private LocalDateTime modifiedAt;
     private RecruitmentStatus status;
+    private UserDto user;
+
 
     public static CompanionResponse fromEntity(Companion companion) {
         return CompanionResponse.builder()
@@ -31,6 +35,7 @@ public class CompanionResponse {
                 .registeredAt(companion.getRegisteredAt())
                 .modifiedAt(companion.getModifiedAt())
                 .status(companion.getStatus())
+                .user(UserDto.fromEntity(companion.getUser()))
                 .build();
     }
 }
