@@ -10,12 +10,6 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    env:
-      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-      DB_URL: ${{ secrets.DB_URL }}
-      DB_USERNAME: ${{ secrets.DB_USERNAME }}
-      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -63,10 +57,6 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           envs: DOCKER_USERNAME,DB_URL,DB_USERNAME,DB_PASSWORD
           script: |
-            export DOCKER_USERNAME="${{ secrets.DOCKER_USERNAME }}"
-            export DB_URL="${{ secrets.DB_URL }}"
-            export DB_USERNAME="${{ secrets.DB_USERNAME }}"
-            export DB_PASSWORD="${{ secrets.DB_PASSWORD }}"
             cd ~/deploy
             chmod +x deploy.sh
             ./deploy.sh
