@@ -3,7 +3,8 @@ package org.example.stamppaw_backend.market.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.stamppaw_backend.admin.market.dto.request.ProductCreateRequest;
-import org.example.stamppaw_backend.market.dto.request.ProductSearchRequest;
+import org.example.stamppaw_backend.common.S3Service;
+import org.example.stamppaw_backend.market.dto.response.ProductDetailResponse;
 import org.example.stamppaw_backend.market.dto.response.ProductListResponse;
 import org.example.stamppaw_backend.market.entity.Product;
 import org.example.stamppaw_backend.market.entity.ProductImage;
@@ -13,8 +14,12 @@ import org.example.stamppaw_backend.market.repository.ProductRepository;
 import org.example.stamppaw_backend.market.repository.projection.ProductListRow;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Locale;
 
 @Service
 @RequiredArgsConstructor
@@ -22,8 +27,11 @@ import java.math.BigDecimal;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final S3Service s3Service;
 
-    public Long createProduct(ProductCreateRequest req) {
+    @Transactional
+    public Long createProduct(ProductCreateRequest req, List<MultipartFile> imageFiles)
+    {
         //로그인, 관리자 권한 체크
 
         Product p = new Product();
@@ -33,33 +41,38 @@ public class ProductService {
         p.setPrice(req.getPrice());
         p.setStatus(req.getStatus() != null ? req.getStatus() : ProductStatus.READY);
 
-        // 상품 이미지
-        if (req.getImages() != null && !req.getImages().isEmpty()) {
+        if (imageFiles == null || imageFiles.isEmpty()) {
+            log.info("[ADMIN MARKET PRODUCT] 이미지 파일이 전달되지 않았습니다.");
+        } else {
+
             int idx = 0;
             boolean hasMain = false;
-            for (var dto : req.getImages()) {
-                // URL 없으면 스킵
-                if (dto.getImageUrl() == null || dto.getImageUrl().isBlank()) continue;
+            for (int i = 0; i < imageFiles.size(); i++) {
+                MultipartFile file = imageFiles.get(i);
+
+                if (file == null || file.isEmpty()) continue;
+
+                String imageUrl = s3Service.uploadFileAndGetUrl(file);
 
                 ProductImage img = new ProductImage();
-                img.setImageUrl(dto.getImageUrl());
+                img.setImageUrl(imageUrl);
 
-                boolean isMain = (dto.getIsMain() != null ? dto.getIsMain() : false);
-                if (!hasMain && (isMain || idx == 0)) { //작업시 조건 확인
-                    isMain = true;
-                    hasMain = true;
-                }
+                boolean isMain = (!hasMain && i == 0);
                 img.setMain(isMain);
-                img.setSort(dto.getSort() != null ? dto.getSort() : idx);
+                if (isMain) hasMain = true;
+
+                img.setSort(i);
                 p.addImage(img);
+
                 idx++;
             }
         }
 
+
         // 상품 옵션
         if (req.getOptions() != null && !req.getOptions().isEmpty()) {
             for (var dto : req.getOptions()) {
-                // 이름/값 모두 비어있으면 스킵
+
                 if ((dto.getName() == null || dto.getName().isBlank()) &&
                         (dto.getValue() == null || dto.getValue().isBlank())) {
                     continue;
@@ -76,7 +89,7 @@ public class ProductService {
         return productRepository.save(p).getId();
     }
 
-    public Page<ProductListResponse> getAdminList(int page, int size) {
+    public Page<ProductListResponse> getListForAdmin(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
 
         return productRepository.findAllForAdmin(pageable)
@@ -87,23 +100,38 @@ public class ProductService {
     public Page<ProductListRow> getProductSearchForAdmin(String name, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
 
-        // 검색어 없으면 null 넣으면 자동 필터 제거
         String keyword = (name == null || name.isBlank()) ? null : name;
 
         return productRepository.findList(keyword, pageable);
     }
 
     // 프런트용 상품 검색 :  status = SERVICE 인 상품만 대상 + 검색 가능
-    public Page<ProductListRow> getProductSearchForFront(String name, int page, int size) {
+    public Page<ProductListRow> getProductSearch(String name, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
 
-        String keyword = (name == null || name.isBlank()) ? null : name;
+        String pattern = (name == null || name.isBlank())
+                ? null
+                : "%" + name.toLowerCase(Locale.ROOT) + "%";
 
-        return productRepository.findListByStatusAndName(
-                ProductStatus.SERVICE,
-                keyword,
-                pageable
-        );
+        return productRepository.findServiceListByName(pattern, pageable);
+    }
+
+
+
+    @Transactional
+    public void deleteProduct(Long productId) {
+        productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 상품이 존재하지 않습니다. ID=" + productId));
+
+        productRepository.deleteById(productId);
+    }
+
+    @Transactional(readOnly = true)
+    public ProductDetailResponse getProductDetail(Long id) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다. id=" + id));
+
+        return ProductDetailResponse.fromEntity(product);
     }
 
 }

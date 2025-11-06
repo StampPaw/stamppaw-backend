@@ -35,6 +35,6 @@ public class ProductImage extends BasicTimeEntity {
     private boolean isMain;
 
     @Builder.Default
-    private Integer sort = 0;
+    private Integer sort = 1;
 
 }

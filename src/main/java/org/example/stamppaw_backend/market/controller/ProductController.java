@@ -2,13 +2,12 @@ package org.example.stamppaw_backend.market.controller;
 
 import lombok.RequiredArgsConstructor;
 
+import org.example.stamppaw_backend.market.dto.request.ProductSearchRequest;
+import org.example.stamppaw_backend.market.dto.response.ProductDetailResponse;
 import org.example.stamppaw_backend.market.repository.projection.ProductListRow;
 import org.example.stamppaw_backend.market.service.ProductService;
 import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/market")
@@ -16,15 +15,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class ProductController {
     private final ProductService productService;
 
+    @PostMapping("/products/search")
+    public Page<ProductListRow> searchProducts(@RequestBody ProductSearchRequest req) {
+        return productService.getProductSearch(req.getKeyword(), req.getPage(), req.getSize());
+    }
 
-
-    @GetMapping("/products/search")
-    public Page<ProductListRow> searchProducts(
-            @RequestParam(required = false) String keyword,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size
-    ) {
-        return productService.getProductSearchForFront(keyword, page, size);
+    @GetMapping("/products/{id}")
+    public ProductDetailResponse getDetail(@PathVariable Long id) {
+        return productService.getProductDetail(id);
     }
 
 

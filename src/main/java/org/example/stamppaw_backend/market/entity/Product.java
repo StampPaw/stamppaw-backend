@@ -48,7 +48,6 @@ public class Product extends BasicTimeEntity {
     @JsonManagedReference("product-images")
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    @OrderBy("sort ASC, id ASC")
     private List<ProductImage> images = new ArrayList<>();
 
     @ToString.Exclude
@@ -60,6 +59,18 @@ public class Product extends BasicTimeEntity {
     // 연관관계 편의 메서드
     public void addImage(ProductImage img){ img.setProduct(this); images.add(img); }
     public void addOption(ProductOption opt){ opt.setProduct(this); options.add(opt); }
+
+    public String getMainImageUrl() {
+        if (images == null || images.isEmpty()) {
+            return null;
+        }
+
+        return images.stream()
+                .filter(ProductImage::isMain)  // 대표 이미지 조건
+                .findFirst()
+                .map(ProductImage::getImageUrl)
+                .orElse(images.get(0).getImageUrl()); // 없으면 첫번째 이미지 반환
+    }
 
 }
 
