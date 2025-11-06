@@ -26,10 +26,10 @@ jobs:
           mkdir -p ./src/main/resources
           echo "${{ secrets.APPLICATION }}" > ./src/main/resources/application.yml
 
-      - name: Debug application.yml
+      - name: Check application.yml path
         run: |
-          echo "===== application.yml in CI ====="
-          cat ./src/main/resources/application.yml
+          echo "===== Checking application.yml existence ====="
+          find . -name "application.yml" || echo "❌ application.yml not found!"
 
       - name: Clear Gradle Cache
         run: |
