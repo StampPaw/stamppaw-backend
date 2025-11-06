@@ -4,7 +4,7 @@ FROM eclipse-temurin:17-jdk
 WORKDIR /app
 
 # build/libs 폴더 안의 빌드 결과 jar 복사
-COPY ./build/libs/*-SNAPSHOT.jar /app/stamppaw_backend.jar
+COPY build/libs/*-SNAPSHOT.jar /app/stamppaw_backend.jar
 
 EXPOSE 8080
 
