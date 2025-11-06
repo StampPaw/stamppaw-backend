@@ -1,8 +1,8 @@
 # jdk17 Image Start
 FROM eclipse-temurin:17-jdk
+WORKDIR /app
 
-# jar 파일 복제
-COPY ./build/libs/stamppaw_backend-0.0.1-SNAPSHOT.jar stamppaw_backend.jar
+# build/libs 폴더 안의 "전체 의존성 포함 JAR"만 복사
+COPY build/libs/*-SNAPSHOT.jar /app/stamppaw_backend.jar
 
-# 실행 명령어
-ENTRYPOINT ["java", "-jar", "stamppaw_backend.jar"]
+ENTRYPOINT ["java", "-jar", "/app/stamppaw_backend.jar"]
