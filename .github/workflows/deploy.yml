@@ -41,6 +41,11 @@ jobs:
           chmod +x ./gradlew
           ./gradlew clean build -x test
 
+      - name: Verify jar before Docker build
+        run: |
+          ls -al build/libs
+          jar tf build/libs/stamppaw_backend-0.0.1-SNAPSHOT.jar | grep User.class || echo "❌ User.class not found"
+
       - name: Check if application.yml exists
         run: test -f ./src/main/resources/application.yml && echo "File exists" || echo "File does not exist"
 
