@@ -22,13 +22,9 @@ jobs:
           distribution: 'temurin'
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+        uses: gradle/actions/setup-gradle@v4
 
-      - name: Build Spring Boot jar
-        run: |
-          chmod +x ./gradlew
-          ./gradlew clean build -x test
-
+      # ✅ application.yml은 빌드 전에 생성해야 함
       - name: Create application.yml
         run: |
           mkdir -p ./src/main/resources
@@ -39,7 +35,10 @@ jobs:
           echo "===== Checking application.yml existence ====="
           find . -name "application.yml" || echo "❌ application.yml not found!"
 
-      
+      - name: Build Spring Boot jar
+        run: |
+          chmod +x ./gradlew
+          ./gradlew clean --no-build-cache build -x test
 
       - name: Verify built JAR
         run: |
@@ -60,8 +59,6 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          echo "📦 빌드된 JAR 확인 중..."
-          ls -al build/libs
           echo "🐳 Docker 이미지 빌드 중..."
           docker build --no-cache \
             -t ${{ secrets.DOCKER_USERNAME }}/stamppaw:latest \
@@ -76,7 +73,6 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
-          # ✅ 여기서만 환경변수 전달
           envs: DOCKER_USERNAME,DB_URL,DB_USERNAME,DB_PASSWORD
           script: |
             cd ~/deploy
