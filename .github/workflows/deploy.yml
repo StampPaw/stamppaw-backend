@@ -10,11 +10,6 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    env:
-      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-      DB_URL: "${{ secrets.DB_URL }}"
-      DB_USERNAME: "${{ secrets.DB_USERNAME }}"
-      DB_PASSWORD: "${{ secrets.DB_PASSWORD }}"
 
     steps:
       - name: Checkout
@@ -41,9 +36,6 @@ jobs:
           chmod +x ./gradlew
           ./gradlew clean build -x test
 
-      - name: Check if application.yml exists
-        run: test -f ./src/main/resources/application.yml && echo "File exists" || echo "File does not exist"
-
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
@@ -54,13 +46,11 @@ jobs:
         run: |
           echo "📦 빌드된 JAR 확인 중..."
           ls -al build/libs
-
           echo "🐳 Docker 이미지 빌드 중..."
           docker build --no-cache \
             -t ${{ secrets.DOCKER_USERNAME }}/stamppaw:latest \
             --platform linux/amd64 \
             -f Dockerfile .
-
           echo "🚀 Docker Hub 푸시 중..."
           docker push ${{ secrets.DOCKER_USERNAME }}/stamppaw:latest
 
@@ -70,8 +60,14 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
+          # ✅ 여기서만 환경변수 전달
           envs: DOCKER_USERNAME,DB_URL,DB_USERNAME,DB_PASSWORD
           script: |
             cd ~/deploy
             chmod +x deploy.sh
             ./deploy.sh
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DB_URL: ${{ secrets.DB_URL }}
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
