@@ -31,6 +31,11 @@ jobs:
           echo "===== application.yml in CI ====="
           cat ./src/main/resources/application.yml
 
+      - name: Clear Gradle Cache
+        run: |
+          echo "🧹 Gradle 캐시 완전 삭제"
+          rm -rf ~/.gradle/caches
+
       - name: Build Spring Boot jar
         run: |
           chmod +x ./gradlew
