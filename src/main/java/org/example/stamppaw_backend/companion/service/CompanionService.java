@@ -54,8 +54,8 @@ public class CompanionService {
     }
 
     public CompanionResponse modifyCompanion(Long postId, Long userId, CompanionUpdateRequest request) {
-        Companion companion = getCompanionOrException(postId);
         User user = userService.getUserOrExcepion(userId);
+        Companion companion = getCompanionOrException(postId);
         if(!user.getId().equals(companion.getUser().getId())) {
             throw new StampPawException(ErrorCode.FORBIDDEN_ACCESS);
         }
@@ -67,6 +67,16 @@ public class CompanionService {
                         .image(s3Service.uploadFileAndGetUrl(request.getImage()))
                         .build()
         );
+    }
+
+    public void deleteCompanion(Long postId, Long userId) {
+        User user = userService.getUserOrExcepion(userId);
+        Companion companion = getCompanionOrException(postId);
+        if(!user.getId().equals(companion.getUser().getId())) {
+            throw new StampPawException(ErrorCode.FORBIDDEN_ACCESS);
+        }
+
+        companionRepository.delete(companion);
     }
 
     private Companion getCompanionOrException(Long postId) {
