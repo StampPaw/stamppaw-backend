@@ -26,7 +26,7 @@ public class UserService {
 
     public UserResponseDto getMyInfo(UserDetails userDetails) {
         User user = userRepository.findByEmail(userDetails.getUsername())
-            .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+            .orElseThrow(() -> new StampPawException(ErrorCode.USER_NOT_FOUND));
         return new UserResponseDto(
             user.getId(),
             user.getNickname(),
@@ -38,10 +38,9 @@ public class UserService {
 
 
     @Transactional
-    public UserResponseDto updateMyInfo(@AuthenticationPrincipal UserDetails userDetails,
-        UserUpdateRequest request) {
+    public UserResponseDto updateMyInfo(UserDetails userDetails, UserUpdateRequest request) {
         User user = userRepository.findByEmail(userDetails.getUsername())
-            .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+            .orElseThrow(() -> new StampPawException(ErrorCode.USER_NOT_FOUND));
 
         if (request.getNickname() != null) user.setNickname(request.getNickname());
         if (request.getRegion() != null) user.setRegion(request.getRegion());
@@ -58,3 +57,4 @@ public class UserService {
         );
     }
 }
+
