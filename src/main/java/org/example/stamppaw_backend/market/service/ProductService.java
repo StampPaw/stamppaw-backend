@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.stamppaw_backend.admin.market.dto.request.ProductCreateRequest;
 import org.example.stamppaw_backend.common.S3Service;
+import org.example.stamppaw_backend.common.exception.ErrorCode;
+import org.example.stamppaw_backend.common.exception.StampPawException;
 import org.example.stamppaw_backend.market.dto.response.ProductDetailResponse;
 import org.example.stamppaw_backend.market.dto.response.ProductListResponse;
 import org.example.stamppaw_backend.market.entity.*;
@@ -114,7 +116,7 @@ public class ProductService {
     @Transactional(readOnly = true)
     public ProductDetailResponse getProductDetail(Long id) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다. id=" + id));
+                .orElseThrow(() -> new StampPawException(ErrorCode.PRODUCT_NOT_FOUND));
 
         return ProductDetailResponse.fromEntity(product);
     }
@@ -132,7 +134,8 @@ public class ProductService {
     @Transactional
     public void deleteProduct(Long productId) {
         productRepository.findById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 상품이 존재하지 않습니다. ID=" + productId));
+                .orElseThrow(() -> new StampPawException(ErrorCode.PRODUCT_NOT_FOUND));
+
 
         productRepository.deleteById(productId);
     }
