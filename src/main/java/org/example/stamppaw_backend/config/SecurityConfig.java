@@ -33,6 +33,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/css/**", "/js/**", "/images/**", "/assets/**").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/follow/**").authenticated()
                 .requestMatchers("/admin/**").permitAll() // 관리자 임시허용
                 .requestMatchers("/api/market/products/**").permitAll() // 마켓 사용자 상품은 비로그인 허용
                 .anyRequest().authenticated()
