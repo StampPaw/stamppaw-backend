@@ -1,5 +1,6 @@
 package org.example.stamppaw_backend.user.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.stamppaw_backend.user.dto.request.LoginRequest;
 import org.example.stamppaw_backend.user.dto.request.SignupRequest;
@@ -18,7 +19,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/signup")
-    public ResponseEntity<String> signup(@RequestBody SignupRequest request) {
+    public ResponseEntity<String> signup(@Valid @RequestBody SignupRequest request) {
         String message = authService.signup(request);
         return ResponseEntity.ok(message);
     }

@@ -19,6 +19,7 @@ public class SignupRequest {
     private String password;
 
     @NotBlank(message = "닉네임은 필수 입력 항목입니다.")
+    @Size(min = 2, max = 15)
     private String nickname;
 
 }
