@@ -26,7 +26,7 @@ public class CompanionService {
     private final S3Service s3Service;
 
     public CompanionResponse createCompanion(CompanionCreateRequest request, Long userId) {
-        User user = userService.getUserOrExcepion(userId);
+        User user = userService.getUserOrException(userId);
 
         Companion companion = companionRepository.save(
                 Companion.builder()
@@ -54,7 +54,7 @@ public class CompanionService {
     }
 
     public CompanionResponse modifyCompanion(Long postId, Long userId, CompanionUpdateRequest request) {
-        User user = userService.getUserOrExcepion(userId);
+        User user = userService.getUserOrException(userId);
         Companion companion = getCompanionOrException(postId);
         if(!user.getId().equals(companion.getUser().getId())) {
             throw new StampPawException(ErrorCode.FORBIDDEN_ACCESS);
@@ -70,7 +70,7 @@ public class CompanionService {
     }
 
     public void deleteCompanion(Long postId, Long userId) {
-        User user = userService.getUserOrExcepion(userId);
+        User user = userService.getUserOrException(userId);
         Companion companion = getCompanionOrException(postId);
         if(!user.getId().equals(companion.getUser().getId())) {
             throw new StampPawException(ErrorCode.FORBIDDEN_ACCESS);
