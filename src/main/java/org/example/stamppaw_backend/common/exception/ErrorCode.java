@@ -13,11 +13,15 @@ public enum ErrorCode {
     PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "상품 정보를 찾을 수 없습니다."),
     DOG_NOT_FOUND(HttpStatus.NOT_FOUND, "동물 정보를 찾을 수 없습니다."),
     AUTH_USER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 이메일의 사용자를 찾을 수 없습니다."),
+    NOT_FOUND(HttpStatus.NOT_FOUND, "요청한 리소스를 찾을 수 없습니다."),
 
     FILE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "이미지 파일 업로드에 실패했습니다."),
 
-
-    FORBIDDEN_ACCESS(HttpStatus.FORBIDDEN, "접근 권한이 존재하지 않습니다.")
+    FORBIDDEN_ACCESS(HttpStatus.FORBIDDEN, "접근 권한이 존재하지 않습니다."),
+    
+    UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증이 필요합니다."),
+    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),
+    WEBSOCKET_AUTH_FAILED(HttpStatus.UNAUTHORIZED, "WebSocket 인증에 실패했습니다.")
     ;
 
     private final HttpStatus httpStatus;
