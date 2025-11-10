@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 public class UserService {
     private final UserRepository userRepository;
 
-    public User getUserOrExcepion(Long userId) {
+    public User getUserOrException(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new StampPawException(ErrorCode.USER_NOT_FOUND));
 
