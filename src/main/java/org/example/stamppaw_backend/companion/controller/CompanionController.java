@@ -7,6 +7,7 @@ import org.example.stamppaw_backend.companion.dto.request.CompanionUpdateRequest
 import org.example.stamppaw_backend.companion.dto.response.CompanionResponse;
 import org.example.stamppaw_backend.companion.service.CompanionService;
 import org.example.stamppaw_backend.user.entity.User;
+import org.example.stamppaw_backend.user.service.CustomUserDetails;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -49,5 +50,11 @@ public class CompanionController {
     public ResponseEntity<String> deleteCompanion(@PathVariable Long postId, @AuthenticationPrincipal User user) {
         companionService.deleteCompanion(postId, user.getId());
         return ResponseEntity.ok("삭제가 완료되었습니다.");
+    }
+
+    @PostMapping("/{postId}/apply")
+    public ResponseEntity<String> applyCompanion(@PathVariable Long postId, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        companionService.applyComapanion(postId, userDetails.getUser().getId());
+        return ResponseEntity.ok("신청이 완료되었습니다.");
     }
 }

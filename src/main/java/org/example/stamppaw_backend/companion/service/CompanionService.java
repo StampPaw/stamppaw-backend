@@ -9,6 +9,7 @@ import org.example.stamppaw_backend.companion.dto.request.CompanionCreateRequest
 import org.example.stamppaw_backend.companion.dto.request.CompanionUpdateRequest;
 import org.example.stamppaw_backend.companion.dto.response.CompanionResponse;
 import org.example.stamppaw_backend.companion.entity.Companion;
+import org.example.stamppaw_backend.companion.entity.CompanionApply;
 import org.example.stamppaw_backend.companion.repository.CompanionRepository;
 import org.example.stamppaw_backend.user.entity.User;
 import org.example.stamppaw_backend.user.service.UserService;
@@ -17,6 +18,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -24,6 +27,7 @@ public class CompanionService {
     private final CompanionRepository companionRepository;
     private final UserService userService;
     private final S3Service s3Service;
+    private final CompanionApplyService companionApplyService;
 
     public CompanionResponse createCompanion(CompanionCreateRequest request, Long userId) {
         User user = userService.getUserOrException(userId);
@@ -77,6 +81,12 @@ public class CompanionService {
         }
 
         companionRepository.delete(companion);
+    }
+
+    public void applyComapanion(Long postId, Long userId) {
+        User user = userService.getUserOrException(userId);
+        Companion companion = getCompanionOrException(postId);
+        companionApplyService.saveCompanionApply(user, companion);
     }
 
     private Companion getCompanionOrException(Long postId) {
