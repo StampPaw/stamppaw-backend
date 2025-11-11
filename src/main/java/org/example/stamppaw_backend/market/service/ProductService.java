@@ -105,7 +105,7 @@ public class ProductService {
     public Page<ProductListRow> getProductSearchForAdmin(String name, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
 
-        // null 또는 공백이면 빈 문자열로 바꿔서 findByNameContainingIgnoreCase("", pageable) -> 전체 반환
+        // null 또는 공백이면 빈 문자열로 바꿔서 -> 전체 반환
         String keyword = (name == null || name.isBlank()) ? "" : name.trim();
 
         return productRepository.findByNameContainingIgnoreCase(keyword, pageable);
@@ -116,12 +116,23 @@ public class ProductService {
     public Page<ProductListRow> getProductSearch(String name, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
 
-        String pattern = (name == null || name.isBlank())
-                ? null
-                : "%" + name.toLowerCase(Locale.ROOT) + "%";
+        String keyword = (name == null || name.isBlank()) ? "" : name.trim();
 
-        return productRepository.findByNameContainingIgnoreCase(pattern, pageable);
+        return productRepository.findByStatusAndNameContainingIgnoreCaseOrderByIdDesc(
+                ProductStatus.SERVICE,
+                keyword,
+                pageable
+        );
     }
+
+    @Transactional(readOnly = true)
+    public List<ProductListResponse> getLatestServiceProducts() {
+        return productRepository.findTop5ByStatusOrderByIdDesc(ProductStatus.SERVICE)
+                .stream()
+                .map(ProductListResponse::fromRow)
+                .toList();
+    }
+
 
     @Transactional(readOnly = true)
     public ProductDetailResponse getProductDetail(Long id) {

@@ -30,12 +30,11 @@ public class ProductController {
         return productService.getProductDetail(id);
     }
 
-    /*
+
     @GetMapping("/products/latest")
-    public ResponseEntity<List<String>> getLatestMainImageUrls() {
-        List<String> urls = productService.
-        return ResponseEntity.ok(urls);
-    }*/
+    public List<ProductListResponse> getLatestMainImageUrls() {
+        return productService.getLatestServiceProducts();
+    }
 
     @GetMapping("/products/category")
     public List<ProductListResponse> listProductsByCategory(

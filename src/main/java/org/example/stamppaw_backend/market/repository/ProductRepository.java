@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.lang.NonNull;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,7 +18,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     // 상세조회 (이미지, 옵션 포함)
     @EntityGraph(attributePaths = {"images", "options"})
-    Optional<Product> findById(Long id);
+    @NonNull
+    Optional<Product> findById(@NonNull Long id);
 
     //관리자: 전체 목록 (대표이미지만, 자동 projection)
     Page<ProductListRow> findAllBy(Pageable pageable);
@@ -36,15 +38,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<ProductListRow> findByCategoryAndStatusOrderByIdDesc(Category category, ProductStatus status);
 
 
-    List<Product> findByStatusOrderByIdDesc(ProductStatus status, Pageable pageable);
-
-
-    @Query("""
-    SELECT p.mainImageUrl
-    FROM Product p
-    ORDER BY p.id DESC
-    """)
-    List<String> findLatestMainImageUrls(Pageable pageable);
+    //서비스 중(SERVICE)인 최신 상품 5개
+    List<ProductListRow> findTop5ByStatusOrderByIdDesc(ProductStatus status);
 
 }
 
