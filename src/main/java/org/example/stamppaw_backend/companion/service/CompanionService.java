@@ -7,6 +7,7 @@ import org.example.stamppaw_backend.common.exception.StampPawException;
 import org.example.stamppaw_backend.companion.dto.CompanionDto;
 import org.example.stamppaw_backend.companion.dto.request.CompanionCreateRequest;
 import org.example.stamppaw_backend.companion.dto.request.CompanionUpdateRequest;
+import org.example.stamppaw_backend.companion.dto.response.CompanionApplyResponse;
 import org.example.stamppaw_backend.companion.dto.response.CompanionResponse;
 import org.example.stamppaw_backend.companion.entity.Companion;
 import org.example.stamppaw_backend.companion.entity.CompanionApply;
@@ -57,6 +58,13 @@ public class CompanionService {
         return CompanionResponse.fromEntity(companion);
     }
 
+    @Transactional(readOnly = true)
+    public Page<CompanionResponse> getUserCompanion(Pageable pageable, Long userId) {
+        User user = userService.getUserOrException(userId);
+        Page<Companion> companions = companionRepository.findAllByUser(pageable, user);
+        return companions.map(CompanionResponse::fromEntity);
+    }
+
     public CompanionResponse modifyCompanion(Long postId, Long userId, CompanionUpdateRequest request) {
         User user = userService.getUserOrException(userId);
         Companion companion = getCompanionOrException(postId);
@@ -89,8 +97,22 @@ public class CompanionService {
         companionApplyService.saveCompanionApply(user, companion);
     }
 
+    public Page<CompanionApplyResponse> getApplyByUser(Long postId, Long userId, Pageable pageable) {
+        User user = userService.getUserOrException(userId);
+        Companion companion = getCompanionOrException(postId);
+        verifyUser(user, companion);
+        Page<CompanionApply> companionApplies = companionApplyService.getCompanionApply(companion, pageable);
+        return companionApplies.map(CompanionApplyResponse::fromEntity);
+    }
+
     private Companion getCompanionOrException(Long postId) {
         return companionRepository.findById(postId)
                 .orElseThrow(() -> new StampPawException(ErrorCode.COMPANION_NOT_FOUND));
+    }
+
+    private void verifyUser (User user, Companion companion) {
+        if(!companion.getUser().equals(user)) {
+            throw new StampPawException(ErrorCode.FORBIDDEN_ACCESS);
+        }
     }
 }

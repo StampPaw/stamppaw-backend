@@ -4,7 +4,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.stamppaw_backend.companion.dto.request.CompanionCreateRequest;
 import org.example.stamppaw_backend.companion.dto.request.CompanionUpdateRequest;
+import org.example.stamppaw_backend.companion.dto.response.CompanionApplyResponse;
 import org.example.stamppaw_backend.companion.dto.response.CompanionResponse;
+import org.example.stamppaw_backend.companion.entity.CompanionApply;
 import org.example.stamppaw_backend.companion.service.CompanionService;
 import org.example.stamppaw_backend.user.entity.User;
 import org.example.stamppaw_backend.user.service.CustomUserDetails;
@@ -39,6 +41,14 @@ public class CompanionController {
         return companionService.getCompanion(postId);
     }
 
+    @GetMapping("/myCompanion")
+    public ResponseEntity<Page<CompanionResponse>> getUserCompanions(@RequestParam(defaultValue = "0") int page,
+                                                                     @RequestParam(defaultValue = "5") int size,
+                                                                     @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(companionService.getUserCompanion(pageable, userDetails.getUser().getId()));
+    }
+
     @PatchMapping("/{postId}")
     public CompanionResponse modifyCompanion(@PathVariable Long postId,
                                              @AuthenticationPrincipal User user,
@@ -58,5 +68,12 @@ public class CompanionController {
         return ResponseEntity.ok("신청이 완료되었습니다.");
     }
 
-
+    @GetMapping("/{postId}/apply/manage")
+    public ResponseEntity<Page<CompanionApplyResponse>> getManageCompanion(@RequestParam(defaultValue = "0") int page,
+                                                                           @RequestParam(defaultValue = "5") int size,
+                                                                           @PathVariable Long postId,
+                                                                           @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(companionService.getApplyByUser(postId, userDetails.getUser().getId(), pageable));
+    }
 }

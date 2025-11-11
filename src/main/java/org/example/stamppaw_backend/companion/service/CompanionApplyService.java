@@ -7,6 +7,8 @@ import org.example.stamppaw_backend.companion.entity.Companion;
 import org.example.stamppaw_backend.companion.entity.CompanionApply;
 import org.example.stamppaw_backend.companion.repository.CompanionApplyRepository;
 import org.example.stamppaw_backend.user.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +28,10 @@ public class CompanionApplyService {
                 .build();
 
         companionApplyRepository.save(companionApply);
+    }
+
+    public Page<CompanionApply> getCompanionApply(Companion companion, Pageable pageable) {
+        return companionApplyRepository.findAllByCompanion(companion, pageable);
     }
 
     private void isAlreadyApply(User user, List<CompanionApply> applies) {
