@@ -54,7 +54,9 @@ public class CompanionController {
 
     @PostMapping("/{postId}/apply")
     public ResponseEntity<String> applyCompanion(@PathVariable Long postId, @AuthenticationPrincipal CustomUserDetails userDetails) {
-        companionService.applyComapanion(postId, userDetails.getUser().getId());
+        companionService.applyCompanion(postId, userDetails.getUser().getId());
         return ResponseEntity.ok("신청이 완료되었습니다.");
     }
+
+
 }

@@ -83,7 +83,7 @@ public class CompanionService {
         companionRepository.delete(companion);
     }
 
-    public void applyComapanion(Long postId, Long userId) {
+    public void applyCompanion(Long postId, Long userId) {
         User user = userService.getUserOrException(userId);
         Companion companion = getCompanionOrException(postId);
         companionApplyService.saveCompanionApply(user, companion);
