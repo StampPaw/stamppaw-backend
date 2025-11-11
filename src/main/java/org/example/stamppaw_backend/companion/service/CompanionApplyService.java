@@ -3,6 +3,9 @@ package org.example.stamppaw_backend.companion.service;
 import lombok.RequiredArgsConstructor;
 import org.example.stamppaw_backend.common.exception.ErrorCode;
 import org.example.stamppaw_backend.common.exception.StampPawException;
+import org.example.stamppaw_backend.companion.dto.response.CompanionApplyResponse;
+import org.example.stamppaw_backend.companion.dto.response.CompanionResponse;
+import org.example.stamppaw_backend.companion.entity.ApplyStatus;
 import org.example.stamppaw_backend.companion.entity.Companion;
 import org.example.stamppaw_backend.companion.entity.CompanionApply;
 import org.example.stamppaw_backend.companion.repository.CompanionApplyRepository;
@@ -30,8 +33,18 @@ public class CompanionApplyService {
         companionApplyRepository.save(companionApply);
     }
 
+    @Transactional(readOnly = true)
     public Page<CompanionApply> getCompanionApply(Companion companion, Pageable pageable) {
         return companionApplyRepository.findAllByCompanion(companion, pageable);
+    }
+
+    public void changeApplyStatus(Long applyId, ApplyStatus status) {
+        CompanionApply companionApply = companionApplyRepository.findById(applyId)
+                .orElseThrow(() -> new StampPawException(ErrorCode.COMPANION_APPLY_NOT_FOUND));
+        if(companionApply.getStatus().equals(status)) {
+            throw new StampPawException(ErrorCode.ALREADY_CHANGE_STATUS);
+        }
+        companionApply.changeStatus(status);
     }
 
     private void isAlreadyApply(User user, List<CompanionApply> applies) {

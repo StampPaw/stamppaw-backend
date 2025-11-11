@@ -2,6 +2,7 @@ package org.example.stamppaw_backend.companion.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.example.stamppaw_backend.companion.dto.request.CompanionApplyStatusRequest;
 import org.example.stamppaw_backend.companion.dto.request.CompanionCreateRequest;
 import org.example.stamppaw_backend.companion.dto.request.CompanionUpdateRequest;
 import org.example.stamppaw_backend.companion.dto.response.CompanionApplyResponse;
@@ -75,5 +76,14 @@ public class CompanionController {
                                                                            @AuthenticationPrincipal CustomUserDetails userDetails) {
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(companionService.getApplyByUser(postId, userDetails.getUser().getId(), pageable));
+    }
+
+    @PutMapping("/{postId}/apply/status/{applyId}")
+    public ResponseEntity<String> changeApplyStatus(@PathVariable Long postId,
+                                                    @PathVariable Long applyId,
+                                                    @RequestBody CompanionApplyStatusRequest request,
+                                                    @AuthenticationPrincipal CustomUserDetails userDetails) {
+        companionService.changeApplyStatus(postId, applyId, userDetails.getUser().getId(), request.getStatus());
+        return ResponseEntity.ok("상태가 변경 되었습니다.");
     }
 }
