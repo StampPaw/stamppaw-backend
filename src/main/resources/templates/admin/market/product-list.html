@@ -41,7 +41,7 @@
       <td
       >
         <a th:href="@{'/admin/products/' + ${product.id}}" class="btn btn-sm btn-primary">상세보기</a>
-        <a th:href="@{/admin/market/products/{id}(id=${product.id})}">수정</a>
+        <a th:href="@{/admin/market/products/{id}(id=${product.id})}" class="btn-third">수정</a>
 
         <form th:action="@{'/admin/products/' + ${product.id} + '/delete'}" method="post" style="display:inline;">
           <button type="submit" class="btn btn-sm btn-primary" onclick="return confirm('정말 삭제하시겠습니까?');">

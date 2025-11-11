@@ -125,7 +125,7 @@ public class ProductService {
 
     @Transactional(readOnly = true)
     public ProductDetailResponse getProductDetail(Long id) {
-        Product product = productRepository.findDetailById(id)
+        Product product = productRepository.findById(id)
                 .orElseThrow(() -> new StampPawException(ErrorCode.PRODUCT_NOT_FOUND));
 
         return ProductDetailResponse.fromEntity(product);
