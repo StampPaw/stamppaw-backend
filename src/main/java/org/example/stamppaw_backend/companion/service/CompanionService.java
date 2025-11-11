@@ -97,6 +97,7 @@ public class CompanionService {
         companionApplyService.saveCompanionApply(user, companion);
     }
 
+    @Transactional(readOnly = true)
     public Page<CompanionApplyResponse> getApplyByUser(Long postId, Long userId, Pageable pageable) {
         User user = userService.getUserOrException(userId);
         Companion companion = getCompanionOrException(postId);
