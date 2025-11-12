@@ -27,17 +27,24 @@ public enum ErrorCode {
 
     // Market
     PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "상품 정보를 찾을 수 없습니다."),
+    CART_ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, "카트에 담은 상품 정보를 찾을 수 없습니다."),
+    INVALID_QUANTITY(HttpStatus.BAD_REQUEST, "카트에 담은 상품 수량은 1이상 이어야 합니다"),
 
     // Companion
     COMPANION_NOT_FOUND(HttpStatus.NOT_FOUND, "동행글을 찾을 수 없습니다."),
+    ALREADY_APPLICANT(HttpStatus.CONFLICT, "이미 처리된 동행 신청입니다."),
+    COMPANION_APPLY_NOT_FOUND(HttpStatus.NOT_FOUND, "동행 신청을 찾을 수 없습니다."),
+    ALREADY_CHANGE_STATUS(HttpStatus.CONFLICT, "이미 처리된 신청 처리입니다."),
+
 
     // Walk
     WALK_NOT_FOUND(HttpStatus.NOT_FOUND, "산책 기록을 찾을 수 없습니다."),
 
     // File / S3
     FILE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "이미지 파일 업로드에 실패했습니다."),
-    FILE_DELETE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "이미지 삭제를 실패했습니다.")
-    
+    FILE_DELETE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "이미지 삭제를 실패했습니다."),
+
+    // AUTH / TOKEN
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증이 필요합니다."),
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),
     WEBSOCKET_AUTH_FAILED(HttpStatus.UNAUTHORIZED, "WebSocket 인증에 실패했습니다.")
