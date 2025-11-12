@@ -28,7 +28,7 @@ public class OrderService {
 
 
     @Transactional
-    public Order createOrder(OrderCreateRequest request) {
+    public Order createOrder(Long userId, OrderCreateRequest request) {
 
         Cart cart = cartRepository.findById(request.getCartId())
                 .orElseThrow(() -> new StampPawException(ErrorCode.CART_NOT_FOUND));
@@ -58,7 +58,7 @@ public class OrderService {
         //CartItem → OrderItem
         List<OrderItem> orderItems = selectedItems.stream()
                 .map(ci -> OrderItem.builder()
-                        .productId(ci.getProduct().getId())
+                        .product(ci.getProduct())
                         .optionSummary(ci.getOptionSummary())
                         .price(ci.getPrice())
                         .quantity(ci.getQuantity())

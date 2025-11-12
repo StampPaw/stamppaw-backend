@@ -3,6 +3,7 @@ package org.example.stamppaw_backend.market.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.example.stamppaw_backend.common.BasicTimeEntity;
+import org.example.stamppaw_backend.user.entity.User;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -37,6 +38,10 @@ public class Order extends BasicTimeEntity {
     private ShippingStatus shippingStatus;
 
     private BigDecimal shippingFee;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> orderItems;

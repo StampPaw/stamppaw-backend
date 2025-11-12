@@ -7,9 +7,9 @@ import java.util.Calendar;
 
 @Getter
 public class CartUpdateRequest {
-    private Long cartItemId; // 수정 대상
-    private Integer quantity; // 변경할 수량
+    private Long cartItemId;
+    private Integer quantity;
 
     private BigDecimal subtotal;
-    private BigDecimal extraPrice; //상품의 옵션별 추가금
+    private BigDecimal extraPrice;
 }
