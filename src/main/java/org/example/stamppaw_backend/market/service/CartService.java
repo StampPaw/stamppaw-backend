@@ -44,15 +44,14 @@ public class CartService {
     }
 
     @Transactional
-    public Cart createCartWithItems(CartCreateRequest request) {
+    public Cart createCartWithItems(Long userId, CartCreateRequest request) {
 
-        User user = userService.getUserOrException(request.getUserId());
+        User user = userService.getUserOrException(userId);
 
         // 장바구니 조회 or 생성
         Cart cart = cartRepository.findByUser(user)
                 .orElseGet(() -> cartRepository.save(Cart.builder().user(user).build()));
 
-        // 상품 아이템 반복 처리
         for (CartCreateRequest.ItemDto itemDto : request.getItems()) {
 
             Product product = productRepository.findById(itemDto.getProductId())
@@ -91,13 +90,16 @@ public class CartService {
         return cart;
     }
 
-
-    //카트의 상품의 수량 변경
     @Transactional
-    public void updateItemQuantity(CartUpdateRequest request) {
+    public void updateItemQuantity(Long userId, CartUpdateRequest request) {
 
         CartItem cartItem = cartItemRepository.findById(request.getCartItemId())
                 .orElseThrow(() -> new StampPawException(ErrorCode.CART_ITEM_NOT_FOUND));
+
+        Long ownerId = cartItem.getCart().getUser().getId();
+        if (!ownerId.equals(userId)) {
+            throw new StampPawException(ErrorCode.UNAUTHORIZED_CART_ACCESS);
+        }
 
         if (request.getQuantity() <= 0) {
             throw new StampPawException(ErrorCode.INVALID_QUANTITY);
@@ -120,9 +122,15 @@ public class CartService {
     }
 
     @Transactional
-    public void removeItem(Long cartItemId) {
+    public void removeItem(Long userId, Long cartItemId) {
+
         CartItem item = cartItemRepository.findById(cartItemId)
                 .orElseThrow(() -> new StampPawException(ErrorCode.CART_ITEM_NOT_FOUND));
+
+        Long ownerId = item.getCart().getUser().getId();
+        if (!ownerId.equals(userId)) {
+            throw new StampPawException(ErrorCode.UNAUTHORIZED_CART_ACCESS);
+        }
 
         Cart cart = item.getCart();
         cart.removeItem(item);

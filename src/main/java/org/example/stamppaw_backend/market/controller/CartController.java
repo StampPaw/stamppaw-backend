@@ -20,29 +20,35 @@ import org.springframework.web.bind.annotation.*;
 public class CartController {
     private final CartService cartService;
 
-    // 유저 장바구니 조회
     @GetMapping
     public ResponseEntity<CartResponse> getCart(@AuthenticationPrincipal CustomUserDetails userDetails) {
         return ResponseEntity.ok(cartService.getUserCart(userDetails.getUser().getId()));
     }
 
     @PostMapping
-    public ResponseEntity<CartResponse> createCart(@RequestBody @Valid CartCreateRequest request) {
-        Cart cart = cartService.createCartWithItems(request);
+    public ResponseEntity<CartResponse> createCart(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestBody @Valid CartCreateRequest request
+    ) {
+        Cart cart = cartService.createCartWithItems(userDetails.getUser().getId(), request);
         return ResponseEntity.ok(CartResponse.fromEntity(cart));
     }
 
-    //카트 상품 수량 변경 => 옵션금액 변경
     @PatchMapping("/item/quantity")
-    public ResponseEntity<Void> updateCartItemQuantity(@RequestBody CartUpdateRequest request) {
-        cartService.updateItemQuantity(request);
+    public ResponseEntity<Void> updateCartItemQuantity(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestBody CartUpdateRequest request
+    ) {
+        cartService.updateItemQuantity(userDetails.getUser().getId(), request);
         return ResponseEntity.ok().build();
     }
 
-    //카트 상품 삭제
     @DeleteMapping("/item/{cartItemId}")
-    public ResponseEntity<Void> deleteCartItem(@PathVariable Long cartItemId) {
-        cartService.removeItem(cartItemId);
+    public ResponseEntity<Void> deleteCartItem(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long cartItemId
+    ) {
+        cartService.removeItem(userDetails.getUser().getId(), cartItemId);
         return ResponseEntity.noContent().build();
     }
 }
