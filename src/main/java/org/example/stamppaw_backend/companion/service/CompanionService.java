@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.stamppaw_backend.common.S3Service;
 import org.example.stamppaw_backend.common.exception.ErrorCode;
 import org.example.stamppaw_backend.common.exception.StampPawException;
-import org.example.stamppaw_backend.companion.dto.CompanionDto;
+import org.example.stamppaw_backend.companion.dto.CompanionManageDto;
 import org.example.stamppaw_backend.companion.dto.request.CompanionCreateRequest;
 import org.example.stamppaw_backend.companion.dto.request.CompanionUpdateRequest;
 import org.example.stamppaw_backend.companion.dto.response.CompanionApplyResponse;
@@ -19,8 +19,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -74,7 +72,7 @@ public class CompanionService {
         }
 
         return companion.updateCompanion(
-                CompanionDto.builder()
+                CompanionManageDto.builder()
                         .title(request.getTitle())
                         .content(request.getContent())
                         .image(s3Service.uploadFileAndGetUrl(request.getImage()))
