@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum ShippingStatus {
+    ORDER("주문완료"),
     READY("준비중"),
     SHIPPED("배송중"),
     DELIVERED("배송완료"),

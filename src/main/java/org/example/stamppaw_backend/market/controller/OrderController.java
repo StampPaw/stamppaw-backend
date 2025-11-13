@@ -33,12 +33,24 @@ public class OrderController {
     }
 
     @GetMapping
-    public Page<OrderListResponse> getUserOrders(
+    public ResponseEntity<Page<OrderListResponse>> getUserOrders(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestParam(required = false) OrderStatus status,
-            @PageableDefault(size = 10, sort = "registeredAt", direction = Sort.Direction.DESC) Pageable pageable
+            Pageable pageable
     ) {
-        Long userId = userDetails.getUser().getId();
-        return orderService.getUserOrders(userId, status, pageable);
+        Page<OrderListResponse> orders =
+                orderService.getUserOrders(userDetails.getUser().getId(), pageable);
+
+        return ResponseEntity.ok(orders);
+    }
+
+
+    @PatchMapping("/{orderId}/status")
+    public ResponseEntity<Void> updateOrderStatus(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long orderId,
+            @RequestParam OrderStatus status
+    ) {
+        orderService.updateOrderStatus(userDetails.getUser().getId(), orderId, status);
+        return ResponseEntity.ok().build();
     }
 }

@@ -1,7 +1,9 @@
 package org.example.stamppaw_backend.market.repository;
 
+import org.example.stamppaw_backend.market.dto.response.OrderListResponse;
 import org.example.stamppaw_backend.market.entity.Order;
 import org.example.stamppaw_backend.market.entity.OrderStatus;
+import org.example.stamppaw_backend.market.entity.ShippingStatus;
 import org.example.stamppaw_backend.market.repository.projection.OrderListRow;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,42 +20,38 @@ public interface OrderRepository  extends JpaRepository<Order, Long> {
                o.totalAmount AS totalAmount,
                o.status AS status,
                o.shippingStatus AS shippingStatus,
-               o.createdAt AS createdAt,
+               o.registeredAt AS registeredAt,
+               o.modifiedAt AS modifiedAt,
                u.nickname AS username
         FROM Order o
         JOIN o.user u
         WHERE (:status IS NULL OR o.status = :status)
-        ORDER BY o.createdAt DESC
     """)
     Page<OrderListRow> findAllSummaries(
             @Param("status") OrderStatus status,
             Pageable pageable
     );
 
-
     @Query("""
-        SELECT o.id AS orderId,
-               o.totalAmount AS totalAmount,
-               o.status AS status,
-               o.shippingStatus AS shippingStatus,
-               o.createdAt AS createdAt
+        SELECT
+            o.id AS orderId,
+            o.totalAmount AS totalAmount,
+            o.status AS status,
+            o.shippingStatus AS shippingStatus,
+            o.registeredAt AS registeredAt,
+            o.modifiedAt AS modifiedAt
         FROM Order o
         WHERE o.user.id = :userId
-          AND (:status IS NULL OR o.status = :status)
-        ORDER BY o.createdAt DESC
     """)
-    Page<OrderListRow> findUserOrders(
-            @Param("userId") Long userId,
-            @Param("status") OrderStatus status,
-            Pageable pageable
-    );
+    Page<OrderListRow> findAllByUserId(@Param("userId") Long userId, Pageable pageable);
+
 
     @Transactional
     @Modifying
     @Query("UPDATE Order o SET o.status = :orderStatus WHERE o.id = :orderId")
     void updateOrderStatus(
             @Param("orderId") Long orderId,
-            @Param("orderStatus") Enum<?> orderStatus
+            @Param("orderStatus") OrderStatus orderStatus
     );
 
     @Transactional
@@ -61,6 +59,6 @@ public interface OrderRepository  extends JpaRepository<Order, Long> {
     @Query("UPDATE Order o SET o.shippingStatus = :shippingStatus WHERE o.id = :orderId")
     void updateShippingStatus(
             @Param("orderId") Long orderId,
-            @Param("shippingStatus") Enum<?> shippingStatus
+            @Param("shippingStatus")ShippingStatus shippingStatus
     );
 }

@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.stamppaw_backend.common.exception.ErrorCode;
 import org.example.stamppaw_backend.common.exception.StampPawException;
 import org.example.stamppaw_backend.market.dto.request.OrderCreateRequest;
-import org.example.stamppaw_backend.market.dto.request.OrderStatusUpdateRequest;
 import org.example.stamppaw_backend.market.dto.response.OrderListResponse;
 import org.example.stamppaw_backend.market.entity.*;
 import org.example.stamppaw_backend.market.repository.CartItemRepository;
@@ -89,6 +88,7 @@ public class OrderService {
         return order;
     }
 
+    @Transactional(readOnly = true)
     public Page<OrderListResponse> getAllOrderSummaries(OrderStatus status, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
 
@@ -96,12 +96,14 @@ public class OrderService {
                 .map(OrderListResponse::fromProjection);
     }
 
-    public Page<OrderListResponse> getUserOrders(Long userId, OrderStatus status, Pageable pageable) {
-
-        return orderRepository.findUserOrders(userId, status, pageable)
+    @Transactional(readOnly = true)
+    public Page<OrderListResponse> getUserOrders(Long userId, Pageable pageable) {
+        return orderRepository.findAllByUserId(userId, pageable)
                 .map(OrderListResponse::fromProjection);
     }
 
+
+    @Transactional
     public void updateOrderStatus(Long userId, Long orderId, OrderStatus status) {
 
         Order order = orderRepository.findById(orderId)
@@ -111,8 +113,7 @@ public class OrderService {
         if (!ownerId.equals(userId)) {
             throw new StampPawException(ErrorCode.UNAUTHORIZED_ORDER_ACCESS);
         }
-
-
+        orderRepository.updateOrderStatus(orderId, status);
     }
 
 }
