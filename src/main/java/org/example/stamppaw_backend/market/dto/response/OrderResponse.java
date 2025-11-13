@@ -44,26 +44,4 @@ public class OrderResponse {
                         .collect(Collectors.toList()))
                 .build();
     }
-
-    @Getter
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class OrderItemResponse {
-        private Long productId;
-        private String productName;
-        private int quantity;
-        private BigDecimal unitPrice;
-        private BigDecimal subtotal;
-
-        public static OrderItemResponse fromEntity(OrderItem item) {
-            return OrderItemResponse.builder()
-                    .productId(item.getProduct().getId())
-                    .productName(item.getProduct().getName())
-                    .quantity(item.getQuantity())
-                    .unitPrice(item.getPrice())
-                    .subtotal(item.getSubtotal())
-                    .build();
-        }
-    }
 }

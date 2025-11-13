@@ -45,7 +45,6 @@ public interface OrderRepository  extends JpaRepository<Order, Long> {
     """)
     Page<OrderListRow> findAllByUserId(@Param("userId") Long userId, Pageable pageable);
 
-
     @Transactional
     @Modifying
     @Query("UPDATE Order o SET o.status = :orderStatus WHERE o.id = :orderId")

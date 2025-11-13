@@ -5,10 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.stamppaw_backend.common.exception.ErrorCode;
 import org.example.stamppaw_backend.common.exception.StampPawException;
 import org.example.stamppaw_backend.market.dto.request.OrderCreateRequest;
+import org.example.stamppaw_backend.market.dto.response.OrderItemResponse;
 import org.example.stamppaw_backend.market.dto.response.OrderListResponse;
 import org.example.stamppaw_backend.market.entity.*;
 import org.example.stamppaw_backend.market.repository.CartItemRepository;
 import org.example.stamppaw_backend.market.repository.CartRepository;
+import org.example.stamppaw_backend.market.repository.OrderItemRepository;
 import org.example.stamppaw_backend.market.repository.OrderRepository;
 import org.example.stamppaw_backend.user.entity.User;
 import org.example.stamppaw_backend.user.service.UserService;
@@ -30,6 +32,7 @@ public class OrderService {
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
     private final OrderRepository orderRepository;
+    private final OrderItemRepository orderItemRepository;
 
 
     @Transactional
@@ -100,6 +103,22 @@ public class OrderService {
     public Page<OrderListResponse> getUserOrders(Long userId, Pageable pageable) {
         return orderRepository.findAllByUserId(userId, pageable)
                 .map(OrderListResponse::fromProjection);
+    }
+
+    public List<OrderItemResponse> getOrderItemsByOrderId(Long userId, Long orderId) {
+
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new StampPawException(ErrorCode.ORDER_NOT_FOUND));
+
+        Long ownerId = order.getUser().getId();
+        if (!ownerId.equals(userId)) {
+            throw new StampPawException(ErrorCode.UNAUTHORIZED_ORDER_ACCESS);
+        }
+
+        return orderItemRepository.findByOrderId(orderId)
+                .stream()
+                .map(OrderItemResponse::fromEntity)
+                .toList();
     }
 
 
