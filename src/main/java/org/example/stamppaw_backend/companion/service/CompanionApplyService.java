@@ -3,8 +3,6 @@ package org.example.stamppaw_backend.companion.service;
 import lombok.RequiredArgsConstructor;
 import org.example.stamppaw_backend.common.exception.ErrorCode;
 import org.example.stamppaw_backend.common.exception.StampPawException;
-import org.example.stamppaw_backend.companion.dto.response.CompanionApplyResponse;
-import org.example.stamppaw_backend.companion.dto.response.CompanionResponse;
 import org.example.stamppaw_backend.companion.dto.response.CompanionUserApplyResponse;
 import org.example.stamppaw_backend.companion.entity.ApplyStatus;
 import org.example.stamppaw_backend.companion.entity.Companion;
