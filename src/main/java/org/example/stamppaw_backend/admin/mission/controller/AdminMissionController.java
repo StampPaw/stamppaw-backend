@@ -1,11 +1,13 @@
 package org.example.stamppaw_backend.admin.mission.controller;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.stamppaw_backend.admin.mission.dto.MissionRequest;
-import org.example.stamppaw_backend.admin.mission.dto.MissionResponse;
 import org.example.stamppaw_backend.admin.mission.service.MissionService;
+import org.example.stamppaw_backend.admin.mission.dto.MissionDto;
+import org.example.stamppaw_backend.mission.dto.UserMissionDto;
+import org.example.stamppaw_backend.mission.entity.UserMission;
+import org.example.stamppaw_backend.mission.service.UserMissionService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,31 +15,31 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/admin/missions")
 @RequiredArgsConstructor
+@PreAuthorize("hasAuthority('USER')")
 public class AdminMissionController {
 
     private final MissionService missionService;
+    private final UserMissionService userMissionService;
 
     @PostMapping
-    public ResponseEntity<MissionResponse> createMission(
-            @Valid @RequestBody MissionRequest request
-    ) {
+    public ResponseEntity<MissionDto> createMission(@RequestBody MissionDto request) {
         return ResponseEntity.ok(missionService.createMission(request));
     }
 
     @GetMapping
-    public ResponseEntity<List<MissionResponse>> getAllMissions() {
+    public ResponseEntity<List<MissionDto>> getAllMissions() {
         return ResponseEntity.ok(missionService.getAllMissions());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<MissionResponse> getMissionById(@PathVariable Long id) {
+    public ResponseEntity<MissionDto> getMissionById(@PathVariable Long id) {
         return ResponseEntity.ok(missionService.getMissionById(id));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<MissionResponse> updateMission(
+    public ResponseEntity<MissionDto> updateMission(
             @PathVariable Long id,
-            @Valid @RequestBody MissionRequest request
+            @RequestBody MissionDto request
     ) {
         return ResponseEntity.ok(missionService.updateMission(id, request));
     }
@@ -46,5 +48,14 @@ public class AdminMissionController {
     public ResponseEntity<Void> deleteMission(@PathVariable Long id) {
         missionService.deleteMission(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("{userId}/assign/{missionId}")
+    public ResponseEntity<UserMissionDto> assignMissionToUser(
+            @PathVariable Long userId,
+            @PathVariable Long missionId
+    ) {
+        UserMission userMission = userMissionService.createUserMission(userId, missionId);
+        return ResponseEntity.ok(UserMissionDto.fromEntity(userMission));
     }
 }

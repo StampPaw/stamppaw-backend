@@ -2,16 +2,17 @@ package org.example.stamppaw_backend.admin.mission.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.example.stamppaw_backend.mission.entity.MissionType;
 
 @Entity
-@Getter
-@Setter
+@Table(name = "missions")
+@Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class Mission {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+    @Id @GeneratedValue
     private Long id;
 
     @Column(nullable = false)
@@ -19,4 +20,7 @@ public class Mission {
 
     @Column(nullable = false)
     private int point;
+
+    @Enumerated(EnumType.STRING)
+    private MissionType type;
 }

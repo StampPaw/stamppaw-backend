@@ -1,13 +1,11 @@
 package org.example.stamppaw_backend.admin.mission.service;
 
 import lombok.RequiredArgsConstructor;
-import org.example.stamppaw_backend.admin.mission.dto.MissionRequest;
-import org.example.stamppaw_backend.admin.mission.dto.MissionResponse;
-import org.example.stamppaw_backend.admin.mission.dto.MissionUpdateRequest;
 import org.example.stamppaw_backend.admin.mission.entity.Mission;
 import org.example.stamppaw_backend.admin.mission.repository.MissionRepository;
 import org.example.stamppaw_backend.common.exception.ErrorCode;
 import org.example.stamppaw_backend.common.exception.StampPawException;
+import org.example.stamppaw_backend.admin.mission.dto.MissionDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,44 +18,54 @@ public class MissionService {
 
     private final MissionRepository missionRepository;
 
-    public MissionResponse createMission(MissionRequest request) {
+    public MissionDto createMission(MissionDto dto) {
         Mission mission = Mission.builder()
-                .content(request.getContent())
-                .point(request.getPoint())
+                .content(dto.getContent())
+                .point(dto.getPoint())
+                .type(dto.getType())
                 .build();
-        Mission saved = missionRepository.save(mission);
-        return MissionResponse.fromEntity(saved);
+
+        return toDto(missionRepository.save(mission));
     }
 
     @Transactional(readOnly = true)
-    public List<MissionResponse> getAllMissions() {
+    public List<MissionDto> getAllMissions() {
         return missionRepository.findAll()
                 .stream()
-                .map(MissionResponse::fromEntity)
+                .map(this::toDto)
                 .toList();
     }
 
     @Transactional(readOnly = true)
-    public MissionResponse getMissionById(Long id) {
+    public MissionDto getMissionById(Long id) {
         Mission mission = missionRepository.findById(id)
                 .orElseThrow(() -> new StampPawException(ErrorCode.MISSION_NOT_FOUND));
-        return MissionResponse.fromEntity(mission);
+        return toDto(mission);
     }
 
-    public MissionResponse updateMission(Long id, MissionRequest request) {
+    public MissionDto updateMission(Long id, MissionDto dto) {
         Mission mission = missionRepository.findById(id)
                 .orElseThrow(() -> new StampPawException(ErrorCode.MISSION_NOT_FOUND));
 
-        mission.setContent(request.getContent());
-        mission.setPoint(request.getPoint());
+        mission.setContent(dto.getContent());
+        mission.setPoint(dto.getPoint());
+        mission.setType(dto.getType());
 
-        Mission updated = missionRepository.save(mission);
-        return MissionResponse.fromEntity(updated);
+        return toDto(missionRepository.save(mission));
     }
 
     public void deleteMission(Long id) {
         Mission mission = missionRepository.findById(id)
                 .orElseThrow(() -> new StampPawException(ErrorCode.MISSION_NOT_FOUND));
         missionRepository.delete(mission);
+    }
+
+    private MissionDto toDto(Mission mission) {
+        return MissionDto.builder()
+                .id(mission.getId())
+                .content(mission.getContent())
+                .point(mission.getPoint())
+                .type(mission.getType())
+                .build();
     }
 }
