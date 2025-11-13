@@ -11,4 +11,5 @@ public class UserResponseDto {
     private String email;
     private String region;
     private String introduction;
+    private String profileImage;
 }

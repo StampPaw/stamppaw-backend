@@ -34,6 +34,7 @@ public class User implements UserDetails {
     private String nickname;
     private String region;
     private String bio;
+    private String profileImage;
 
     @Enumerated(EnumType.STRING)
     private Role role;

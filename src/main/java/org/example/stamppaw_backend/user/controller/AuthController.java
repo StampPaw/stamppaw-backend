@@ -29,4 +29,9 @@ public class AuthController {
         String token = authService.login(request);
         return ResponseEntity.ok("Bearer " + token);
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout() {
+        return ResponseEntity.ok("로그아웃 완료");
+    }
 }
