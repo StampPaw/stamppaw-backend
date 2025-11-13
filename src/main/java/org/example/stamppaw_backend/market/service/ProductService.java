@@ -18,6 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -142,14 +144,16 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public List<ProductListResponse> getProductsByCategory(Category category) {
+    public Map<String, List<ProductListResponse>> getServiceProductsGrouped() {
 
-        ProductStatus activeStatus = ProductStatus.SERVICE;
-
-        return productRepository.findByCategoryAndStatusOrderByIdDesc(category, activeStatus)
+        List<ProductListResponse> products = productRepository
+                .findByStatus(ProductStatus.SERVICE)
                 .stream()
-                .map(ProductListResponse::fromRow)
+                .map(ProductListResponse::fromEntity)
                 .toList();
+
+        return products.stream()
+                .collect(Collectors.groupingBy(ProductListResponse::category));
     }
 
     @Transactional

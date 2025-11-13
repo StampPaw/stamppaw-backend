@@ -33,6 +33,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             Pageable pageable
     );
 
+    // 상품 상태가 SERVICE 인 것만 조회
+    List<Product> findByStatus(ProductStatus status);
+
     // 프런트: 카테고리 + 상태별 목록
     List<ProductListRow> findByCategoryAndStatusOrderByIdDesc(Category category, ProductStatus status);
 
