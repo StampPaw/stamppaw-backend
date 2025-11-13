@@ -63,4 +63,8 @@ public class Companion extends BasicTimeEntity {
                 .build();
     }
 
+    public void updateStatus(RecruitmentStatus status) {
+        this.status = status;
+    }
+
 }

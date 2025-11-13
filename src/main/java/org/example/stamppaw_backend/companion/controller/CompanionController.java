@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.stamppaw_backend.companion.dto.request.CompanionApplyStatusRequest;
 import org.example.stamppaw_backend.companion.dto.request.CompanionCreateRequest;
+import org.example.stamppaw_backend.companion.dto.request.CompanionRecruitmentStatusRequest;
 import org.example.stamppaw_backend.companion.dto.request.CompanionUpdateRequest;
 import org.example.stamppaw_backend.companion.dto.response.CompanionApplyResponse;
 import org.example.stamppaw_backend.companion.dto.response.CompanionResponse;
@@ -86,6 +87,14 @@ public class CompanionController {
                                                     @RequestBody CompanionApplyStatusRequest request,
                                                     @AuthenticationPrincipal CustomUserDetails userDetails) {
         companionService.changeApplyStatus(postId, applyId, userDetails.getUser().getId(), request.getStatus());
+        return ResponseEntity.ok("상태가 변경 되었습니다.");
+    }
+
+    @PutMapping("/{postId}")
+    public ResponseEntity<String> changeRecruitmentStatus(@PathVariable Long postId,
+                                                    @RequestBody CompanionRecruitmentStatusRequest request,
+                                                    @AuthenticationPrincipal CustomUserDetails userDetails) {
+        companionService.changeRecruitmentStatus(postId, userDetails.getUser().getId(), request.getStatus());
         return ResponseEntity.ok("상태가 변경 되었습니다.");
     }
 

@@ -12,6 +12,7 @@ import org.example.stamppaw_backend.companion.dto.response.CompanionResponse;
 import org.example.stamppaw_backend.companion.entity.ApplyStatus;
 import org.example.stamppaw_backend.companion.entity.Companion;
 import org.example.stamppaw_backend.companion.entity.CompanionApply;
+import org.example.stamppaw_backend.companion.entity.RecruitmentStatus;
 import org.example.stamppaw_backend.companion.repository.CompanionRepository;
 import org.example.stamppaw_backend.user.entity.User;
 import org.example.stamppaw_backend.user.service.UserService;
@@ -110,6 +111,13 @@ public class CompanionService {
         Companion companion = getCompanionOrException(postId);
         verifyUser(user, companion);
         companionApplyService.changeApplyStatus(applyId, status);
+    }
+
+    public void changeRecruitmentStatus(Long postId, Long userId, RecruitmentStatus status) {
+        User user = userService.getUserOrException(userId);
+        Companion companion = getCompanionOrException(postId);
+        verifyUser(user, companion);
+        companion.updateStatus(status);
     }
 
     private Companion getCompanionOrException(Long postId) {
