@@ -9,7 +9,7 @@ import java.util.List;
 
 @Data
 @Builder
-public class CompanionDto {
+public class CompanionManageDto {
     private String title;
     private String content;
     private String image;
