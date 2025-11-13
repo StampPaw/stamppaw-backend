@@ -2,6 +2,7 @@ package org.example.stamppaw_backend.mission.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.example.stamppaw_backend.admin.mission.entity.Mission;
 import org.example.stamppaw_backend.user.entity.User;
 
 import java.time.LocalDate;

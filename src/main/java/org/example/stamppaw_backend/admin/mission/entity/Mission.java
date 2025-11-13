@@ -1,4 +1,4 @@
-package org.example.stamppaw_backend.mission.entity;
+package org.example.stamppaw_backend.admin.mission.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -18,5 +18,5 @@ public class Mission {
     private String content;
 
     @Column(nullable = false)
-    private int reward;
+    private int point;
 }

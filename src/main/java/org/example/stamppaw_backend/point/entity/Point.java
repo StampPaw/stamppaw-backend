@@ -1,4 +1,4 @@
-package org.example.stamppaw_backend.mission.entity;
+package org.example.stamppaw_backend.point.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -10,13 +10,10 @@ import org.example.stamppaw_backend.user.entity.User;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Exp {
+public class Point {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Enumerated(EnumType.STRING)
-    private ExpType type;
 
     private int total;
 
@@ -24,4 +21,3 @@ public class Exp {
     @JoinColumn(name = "user_id")
     private User user;
 }
-

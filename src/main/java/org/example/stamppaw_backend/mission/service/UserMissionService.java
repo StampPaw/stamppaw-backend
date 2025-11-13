@@ -2,12 +2,11 @@
 package org.example.stamppaw_backend.mission.service;
 
 import lombok.RequiredArgsConstructor;
-import org.example.stamppaw_backend.mission.entity.Exp;
-import org.example.stamppaw_backend.mission.entity.ExpType;
-import org.example.stamppaw_backend.mission.entity.Mission;
+import org.example.stamppaw_backend.point.entity.Point;
+import org.example.stamppaw_backend.admin.mission.entity.Mission;
 import org.example.stamppaw_backend.mission.entity.UserMission;
-import org.example.stamppaw_backend.mission.repository.ExpRepository;
-import org.example.stamppaw_backend.mission.repository.MissionRepository;
+import org.example.stamppaw_backend.point.repository.PointRepository;
+import org.example.stamppaw_backend.admin.mission.repository.MissionRepository;
 import org.example.stamppaw_backend.mission.repository.UserMissionRepository;
 import org.example.stamppaw_backend.user.entity.User;
 import org.example.stamppaw_backend.user.repository.UserRepository;
@@ -24,9 +23,8 @@ public class UserMissionService {
     private final UserMissionRepository userMissionRepository;
     private final MissionRepository missionRepository;
     private final UserRepository userRepository;
-    private final ExpRepository expRepository;
+    private final PointRepository pointRepository;
 
-    // ✅ 유저에게 미션 부여
     @Transactional
     public UserMission assignMission(Long userId, Long missionId) {
         User user = userRepository.findById(userId)
@@ -44,7 +42,6 @@ public class UserMissionService {
         return userMissionRepository.save(userMission);
     }
 
-    // ✅ 미션 완료 처리
     @Transactional
     public UserMission completeMission(Long userMissionId) {
         UserMission userMission = userMissionRepository.findById(userMissionId)
@@ -57,16 +54,15 @@ public class UserMissionService {
         userMission.setStatus(true);
         userMission.setEndDate(LocalDate.now());
 
-        // 경험치 증가 로직
-        Exp exp = expRepository.findByUserIdAndType(userMission.getUser().getId(), ExpType.POINT)
-                .orElse(Exp.builder()
+        // 포인트 증가
+        Point point = pointRepository.findByUserId(userMission.getUser().getId())
+                .orElse(Point.builder()
                         .user(userMission.getUser())
-                        .type(ExpType.POINT)
                         .total(0)
                         .build());
 
-        exp.setTotal(exp.getTotal() + userMission.getMission().getReward());
-        expRepository.save(exp);
+        point.setTotal(point.getTotal() + userMission.getMission().getPoint());
+        pointRepository.save(point);
 
         return userMissionRepository.save(userMission);
     }
