@@ -50,6 +50,7 @@ public class CompanionApplyService {
         companionApply.changeStatus(status);
     }
 
+    @Transactional(readOnly = true)
     public Page<CompanionUserApplyResponse> getUserApply(Pageable pageable, Long userId) {
         User user = userService.getUserOrException(userId);
         Page<CompanionApply> applies = companionApplyRepository.findCompanionApplyByApplicant(user, pageable);
