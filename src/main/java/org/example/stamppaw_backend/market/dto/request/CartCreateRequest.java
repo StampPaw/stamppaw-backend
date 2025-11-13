@@ -16,7 +16,7 @@ import java.util.List;
 @Builder
 public class CartCreateRequest {
     @NotNull
-    private Long userId; // 어떤 사용자의 장바구니인지
+    private Long userId;
 
     @Valid
     @Builder.Default

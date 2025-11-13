@@ -1,6 +1,5 @@
 package org.example.stamppaw_backend.market.entity;
 
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -24,7 +23,7 @@ public class CartItem extends BasicTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @JsonBackReference("cart-items")
+    @JsonBackReference("cart-cartItems")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cart_id", nullable = false)
     private Cart cart;
