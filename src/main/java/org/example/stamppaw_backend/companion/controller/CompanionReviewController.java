@@ -3,6 +3,7 @@ package org.example.stamppaw_backend.companion.controller;
 import lombok.RequiredArgsConstructor;
 import org.example.stamppaw_backend.companion.dto.request.CompanionReviewCreateRequest;
 import org.example.stamppaw_backend.companion.dto.response.CompanionReviewResponse;
+import org.example.stamppaw_backend.companion.entity.CompanionReview;
 import org.example.stamppaw_backend.companion.service.CompanionReviewService;
 import org.example.stamppaw_backend.user.service.CustomUserDetails;
 import org.springframework.data.domain.Page;
@@ -32,5 +33,13 @@ public class CompanionReviewController {
                                                                            @AuthenticationPrincipal CustomUserDetails userDetails) {
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(companionReviewService.getReceivedReviews(pageable, userDetails.getUser().getId()));
+    }
+
+    @GetMapping("/send")
+    public ResponseEntity<Page<CompanionReviewResponse>> getSendReview(@RequestParam(defaultValue = "0") int page,
+                                                               @RequestParam(defaultValue = "5") int size,
+                                                               @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(companionReviewService.getSendReviews(pageable, userDetails.getUser().getId()));
     }
 }

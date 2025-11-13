@@ -18,7 +18,17 @@ public class CompanionReviewResponse {
     private UserDto userDto;
     private List<String> tags;
 
-    public static CompanionReviewResponse from(CompanionReview companionReview) {
+    public static CompanionReviewResponse receivedFrom(CompanionReview companionReview) {
+        return CompanionReviewResponse.builder()
+                .title(companionReview.getApply().getCompanion().getTitle())
+                .userDto(UserDto.fromEntity(companionReview.getApply().getApplicant()))
+                .tags(companionReview.getTags().stream()
+                        .map(m -> m.getTag().getTag())
+                        .toList())
+                .build();
+    }
+
+    public static CompanionReviewResponse sendFrom(CompanionReview companionReview) {
         return CompanionReviewResponse.builder()
                 .title(companionReview.getApply().getCompanion().getTitle())
                 .userDto(UserDto.fromEntity(companionReview.getApply().getCompanion().getUser()))

@@ -52,7 +52,15 @@ public class CompanionReviewService {
         User user = userService.getUserOrException(userId);
         Page<CompanionReview> reviews = companionReviewRepository.findCompanionReviewByUser(pageable, user);
 
-        return reviews.map(CompanionReviewResponse::from);
+        return reviews.map(CompanionReviewResponse::receivedFrom);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<CompanionReviewResponse> getSendReviews(Pageable pageable, Long userId) {
+        User user = userService.getUserOrException(userId);
+        Page<CompanionReview> reviews = companionReviewRepository.findCompanionReviewByApplyUser(pageable, user);
+
+        return reviews.map(CompanionReviewResponse::sendFrom);
     }
 
 

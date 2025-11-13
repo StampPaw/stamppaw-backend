@@ -13,4 +13,7 @@ import java.util.List;
 public interface CompanionReviewRepository extends JpaRepository<CompanionReview, Long> {
     @Query("SELECT r FROM CompanionReview r WHERE r.apply.companion.user = :user")
     Page<CompanionReview> findCompanionReviewByUser(Pageable pageable, @Param("user") User user);
+
+    @Query("SELECT r FROM CompanionReview r WHERE r.apply.applicant = :user")
+    Page<CompanionReview> findCompanionReviewByApplyUser(Pageable pageable, @Param("user") User user);
 }
