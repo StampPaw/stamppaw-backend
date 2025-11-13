@@ -1,0 +1,33 @@
+package org.example.stamppaw_backend.market.dto.response;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.example.stamppaw_backend.market.entity.OrderItem;
+
+import java.math.BigDecimal;
+
+@Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class OrderItemResponse {
+    private Long productId;
+    private String productName;
+    private int quantity;
+    private BigDecimal price;
+    private BigDecimal subtotal;
+    private String userImageUrl;
+
+    public static OrderItemResponse fromEntity(OrderItem item) {
+        return OrderItemResponse.builder()
+                .productId(item.getProduct().getId())
+                .productName(item.getProduct().getName())
+                .quantity(item.getQuantity())
+                .price(item.getPrice())
+                .subtotal(item.getSubtotal())
+                .userImageUrl(item.getUserImageUrl())
+                .build();
+    }
+}
