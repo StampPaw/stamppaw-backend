@@ -9,7 +9,6 @@ import org.example.stamppaw_backend.market.entity.Category;
 import org.example.stamppaw_backend.market.repository.projection.ProductListRow;
 import org.example.stamppaw_backend.market.service.ProductService;
 import org.springframework.data.domain.Page;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

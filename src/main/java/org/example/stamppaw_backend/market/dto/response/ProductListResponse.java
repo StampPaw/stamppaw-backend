@@ -1,6 +1,5 @@
 package org.example.stamppaw_backend.market.dto.response;
 
-
 import org.example.stamppaw_backend.market.entity.Product;
 import org.example.stamppaw_backend.market.repository.projection.ProductListRow;
 

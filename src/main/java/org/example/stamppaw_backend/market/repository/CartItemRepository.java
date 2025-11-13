@@ -1,10 +1,8 @@
 package org.example.stamppaw_backend.market.repository;
 
-import org.example.stamppaw_backend.market.entity.Cart;
 import org.example.stamppaw_backend.market.entity.CartItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface CartItemRepository extends JpaRepository<CartItem, Long> {

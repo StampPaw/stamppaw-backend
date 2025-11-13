@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.example.stamppaw_backend.market.entity.Order;
-import org.example.stamppaw_backend.market.entity.OrderItem;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

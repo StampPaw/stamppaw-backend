@@ -1,6 +1,5 @@
 package org.example.stamppaw_backend.market.entity;
 
-
 import jakarta.persistence.*;
 import lombok.*;
 import org.example.stamppaw_backend.common.BasicTimeEntity;

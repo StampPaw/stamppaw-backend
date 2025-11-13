@@ -1,6 +1,5 @@
 package org.example.stamppaw_backend.market.repository;
 
-import org.example.stamppaw_backend.market.dto.response.OrderListResponse;
 import org.example.stamppaw_backend.market.entity.Order;
 import org.example.stamppaw_backend.market.entity.OrderStatus;
 import org.example.stamppaw_backend.market.entity.ShippingStatus;
