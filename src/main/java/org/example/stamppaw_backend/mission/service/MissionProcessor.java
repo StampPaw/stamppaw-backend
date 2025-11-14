@@ -8,27 +8,27 @@ import org.example.stamppaw_backend.mission.repository.UserMissionRepository;
 import org.example.stamppaw_backend.point.entity.Point;
 import org.example.stamppaw_backend.point.repository.PointRepository;
 import org.example.stamppaw_backend.user.entity.User;
-import org.example.stamppaw_backend.user.repository.UserRepository;
 import org.example.stamppaw_backend.walk.entity.Walk;
 import org.example.stamppaw_backend.mission.service.handler.MissionHandler;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class MissionProcessor {
 
     private final UserMissionRepository userMissionRepository;
     private final PointRepository pointRepository;
-    private final UserRepository userRepository;
     private final List<MissionHandler> handlers;
 
     public void handleWalkCompleted(Walk walk) {
 
         Long userId = walk.getUser().getId();
-        List<UserMission> missions = userMissionRepository.findByUserIdAndStatusFalse(userId);
+        List<UserMission> missions = userMissionRepository.findByUserIdAndStatusFalseWithMission(userId);
 
         for (UserMission userMission : missions) {
 
@@ -59,7 +59,6 @@ public class MissionProcessor {
         int point = mission.getPoint();
 
         user.addPoint(point);
-        userRepository.save(user);
 
         Point pointHistory = Point.builder()
                 .user(user)

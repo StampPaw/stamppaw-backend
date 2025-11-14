@@ -1,7 +1,6 @@
 package org.example.stamppaw_backend.mission.service.handler;
 
 import lombok.RequiredArgsConstructor;
-import org.example.stamppaw_backend.admin.mission.entity.Mission;
 import org.example.stamppaw_backend.mission.entity.MissionType;
 import org.example.stamppaw_backend.mission.entity.UserMission;
 import org.example.stamppaw_backend.walk.entity.Walk;
