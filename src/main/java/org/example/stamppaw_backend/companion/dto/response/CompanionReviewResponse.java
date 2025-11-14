@@ -15,13 +15,13 @@ import java.util.List;
 @AllArgsConstructor
 public class CompanionReviewResponse {
     private String title;
-    private UserDto userDto;
+    private UserDto user;
     private List<String> tags;
 
     public static CompanionReviewResponse receivedFrom(CompanionReview companionReview) {
         return CompanionReviewResponse.builder()
                 .title(companionReview.getApply().getCompanion().getTitle())
-                .userDto(UserDto.fromEntity(companionReview.getApply().getApplicant()))
+                .user(UserDto.fromEntity(companionReview.getApply().getApplicant()))
                 .tags(companionReview.getTags().stream()
                         .map(m -> m.getTag().getTag())
                         .toList())
@@ -31,7 +31,7 @@ public class CompanionReviewResponse {
     public static CompanionReviewResponse sendFrom(CompanionReview companionReview) {
         return CompanionReviewResponse.builder()
                 .title(companionReview.getApply().getCompanion().getTitle())
-                .userDto(UserDto.fromEntity(companionReview.getApply().getCompanion().getUser()))
+                .user(UserDto.fromEntity(companionReview.getApply().getCompanion().getUser()))
                 .tags(companionReview.getTags().stream()
                         .map(m -> m.getTag().getTag())
                         .toList())
