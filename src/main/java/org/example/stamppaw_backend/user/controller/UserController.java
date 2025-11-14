@@ -22,7 +22,7 @@ public class UserController {
     }
 
     // 내 정보 수정
-    @PatchMapping(value = "/me", consumes = {"multipart/form-data"})
+    @PatchMapping(value = "/me")
     public UserResponseDto updateMyInfo(
         @AuthenticationPrincipal UserDetails userDetails,
         @RequestPart(value = "nickname", required = false) String nickname,

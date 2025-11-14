@@ -37,6 +37,7 @@ public class User implements UserDetails {
     private String nickname;
     private String region;
     private String bio;
+    private String profileImage;
     private long totalPoint;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -80,5 +81,4 @@ public class User implements UserDetails {
     public void addPoint(int point) {
         this.totalPoint += point;
     }
-
 }

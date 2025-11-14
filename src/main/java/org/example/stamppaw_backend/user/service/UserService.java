@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import java.io.File;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
+import org.example.stamppaw_backend.common.S3Service;
 import org.example.stamppaw_backend.common.exception.ErrorCode;
 import org.example.stamppaw_backend.common.exception.StampPawException;
 import org.example.stamppaw_backend.user.dto.response.UserResponseDto;
@@ -18,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final S3Service s3Service;
 
     public User getUserOrException(Long userId) {
         return userRepository.findById(userId)
@@ -51,26 +53,9 @@ public class UserService {
         if (nickname != null) {
             user.setNickname(nickname);
         }
-
-        // 반드시 마지막에 "/" 포함
-        String uploadDir = "/Users/pooroome/Downloads/profile/";
-
-        // 폴더 없으면 생성
-        File dir = new File(uploadDir);
-        if (!dir.exists()) {
-            dir.mkdirs();
-        }
-
         if (profileImage != null && !profileImage.isEmpty()) {
-            String fileName = System.currentTimeMillis() + "_" + profileImage.getOriginalFilename();
-
-            File saveFile = new File(uploadDir + fileName);
-            try {
-                profileImage.transferTo(saveFile);
-                user.setProfileImage(fileName);
-            } catch (IOException e) {
-                throw new StampPawException(ErrorCode.FILE_UPLOAD_FAILED);
-            }
+            String imageUrl = s3Service.uploadFileAndGetUrl(profileImage);
+            user.setProfileImage(imageUrl);
         }
 
         userRepository.save(user);
