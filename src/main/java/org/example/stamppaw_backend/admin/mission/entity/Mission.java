@@ -12,7 +12,8 @@ import org.example.stamppaw_backend.mission.entity.MissionType;
 @Builder
 public class Mission {
 
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
