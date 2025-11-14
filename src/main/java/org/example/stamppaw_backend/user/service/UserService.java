@@ -21,6 +21,10 @@ public class UserService {
     private final UserRepository userRepository;
     private final S3Service s3Service;
 
+    public boolean isNicknameDuplicate(String nickname) {
+        return userRepository.existsByNickname(nickname);
+    }
+
     public User getUserOrException(Long userId) {
         return userRepository.findById(userId)
             .orElseThrow(() -> new StampPawException(ErrorCode.USER_NOT_FOUND));
@@ -50,9 +54,13 @@ public class UserService {
         User user = userRepository.findByEmail(userDetails.getUsername())
             .orElseThrow(() -> new StampPawException(ErrorCode.USER_NOT_FOUND));
 
-        if (nickname != null) {
+        if (nickname != null && !nickname.equals(user.getNickname())) {
+            if (userRepository.existsByNickname(nickname)) {
+                throw new StampPawException(ErrorCode.DUPLICATE_NICKNAME);
+            }
             user.setNickname(nickname);
         }
+
         if (profileImage != null && !profileImage.isEmpty()) {
             String imageUrl = s3Service.uploadFileAndGetUrl(profileImage);
             user.setProfileImage(imageUrl);
