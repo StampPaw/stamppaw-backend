@@ -10,7 +10,7 @@ import org.example.stamppaw_backend.point.dto.PointResponse;
 import org.example.stamppaw_backend.point.entity.Point;
 import org.example.stamppaw_backend.point.repository.PointRepository;
 import org.example.stamppaw_backend.user.entity.User;
-import org.example.stamppaw_backend.user.repository.UserRepository;
+import org.example.stamppaw_backend.user.service.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,12 +22,11 @@ import java.util.List;
 public class PointService {
 
     private final PointRepository pointRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     // 1) 일반 포인트 지급
     public PointResponse addPoint(Long userId, PointRequest request) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new StampPawException(ErrorCode.USER_NOT_FOUND));
+        User user = userService.getUserOrException(userId);
 
         int amount = request.getAmount();
         MissionType reason = request.getReason();
@@ -69,8 +68,7 @@ public class PointService {
 
     @Transactional(readOnly = true)
     public List<PointResponse> getPoints(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new StampPawException(ErrorCode.USER_NOT_FOUND));
+        User user = userService.getUserOrException(userId);
 
         return pointRepository.findAllByUser(user)
                 .stream()
@@ -80,8 +78,7 @@ public class PointService {
 
     @Transactional(readOnly = true)
     public int getTotalPointsForUser(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new StampPawException(ErrorCode.USER_NOT_FOUND));
+        User user = userService.getUserOrException(userId);
 
         return (int) user.getTotalPoint();
     }

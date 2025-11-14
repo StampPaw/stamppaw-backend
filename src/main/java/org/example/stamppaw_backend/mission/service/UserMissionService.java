@@ -8,12 +8,8 @@ import org.example.stamppaw_backend.common.exception.StampPawException;
 import org.example.stamppaw_backend.mission.dto.UserMissionDto;
 import org.example.stamppaw_backend.mission.entity.UserMission;
 import org.example.stamppaw_backend.mission.repository.UserMissionRepository;
-import org.example.stamppaw_backend.point.entity.Point;
-import org.example.stamppaw_backend.point.repository.PointRepository;
-import org.example.stamppaw_backend.point.service.PointService;
 import org.example.stamppaw_backend.user.entity.User;
-import org.example.stamppaw_backend.user.repository.UserRepository;
-import org.example.stamppaw_backend.walk.entity.Walk;
+import org.example.stamppaw_backend.user.service.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,12 +22,11 @@ import java.util.List;
 public class UserMissionService {
 
     private final UserMissionRepository userMissionRepository;
-    private final UserRepository userRepository;
     private final MissionRepository missionRepository;
+    private final UserService userService;
 
     public UserMission createUserMission(Long userId, Long missionId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new StampPawException(ErrorCode.USER_NOT_FOUND));
+        User user = userService.getUserOrException(userId);
 
         Mission mission = missionRepository.findById(missionId)
                 .orElseThrow(() -> new StampPawException(ErrorCode.MISSION_NOT_FOUND));
