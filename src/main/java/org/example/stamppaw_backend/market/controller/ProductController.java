@@ -28,15 +28,21 @@ public class ProductController {
         return productService.getProductSearch(req.getKeyword(), req.getPage(), req.getSize());
     }
 
-    @GetMapping("/products/{id}")
-    public ProductDetailResponse getDetail(@PathVariable Long id) {
-        return productService.getProductDetail(id);
-    }
-
-
     @GetMapping("/products/latest")
     public List<ProductListResponse> getLatestMainImageUrls() {
         return productService.getLatestServiceProducts();
+    }
+
+    @GetMapping("/products/grouped")
+    public ResponseEntity<Map<String, List<ProductListResponse>>> getGroupedServiceProducts() {
+        return ResponseEntity.ok(productService.getServiceProductsGrouped());
+    }
+
+    @GetMapping("/products/category")
+    public List<ProductListResponse> listProductsByCategory(
+            @RequestParam Category category
+    ) {
+        return productService.getProductsByCategory(category);
     }
 
     @GetMapping("/categories")
@@ -49,8 +55,8 @@ public class ProductController {
         return ResponseEntity.ok(categories);
     }
 
-    @GetMapping("/products/grouped")
-    public ResponseEntity<Map<String, List<ProductListResponse>>> getGroupedServiceProducts() {
-        return ResponseEntity.ok(productService.getServiceProductsGrouped());
+    @GetMapping("/products/{id}")
+    public ProductDetailResponse getDetail(@PathVariable Long id) {
+        return productService.getProductDetail(id);
     }
 }
