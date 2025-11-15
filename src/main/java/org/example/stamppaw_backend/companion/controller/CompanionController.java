@@ -28,8 +28,8 @@ public class CompanionController {
     private final CompanionApplyService companionApplyService;
 
     @PostMapping
-    public CompanionResponse createCompanion(@Valid CompanionCreateRequest request, @AuthenticationPrincipal User user) {
-        return companionService.createCompanion(request, user.getId());
+    public CompanionResponse createCompanion(@Valid CompanionCreateRequest request, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return companionService.createCompanion(request, userDetails.getUser().getId());
     }
 
     @GetMapping
