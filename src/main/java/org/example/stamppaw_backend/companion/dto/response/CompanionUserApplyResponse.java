@@ -12,12 +12,14 @@ import org.example.stamppaw_backend.companion.entity.CompanionApply;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CompanionUserApplyResponse {
+    private Long id;
     private CompanionDto companionDto;
     private String status;
     private boolean isReviewWritten;
 
     public static CompanionUserApplyResponse from(CompanionApply apply, boolean isReviewWritten) {
         return CompanionUserApplyResponse.builder()
+                .id(apply.getId())
                 .companionDto(CompanionDto.from(apply.getCompanion()))
                 .status(apply.getStatus().toString())
                 .isReviewWritten(isReviewWritten)
