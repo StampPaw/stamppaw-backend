@@ -47,6 +47,9 @@ public class CompanionReviewService {
                     .build();
             mappingRepository.save(reviewMapping);
         }
+
+        user.addPoint(1);
+
     }
 
     @Transactional(readOnly = true)
