@@ -37,7 +37,7 @@ public class CompanionService {
                 Companion.builder()
                         .title(request.getTitle())
                         .content(request.getContent())
-                        .imageUrl(s3Service.uploadFileAndGetUrl(request.getImage()))
+                        .imageUrl(request.getImage() != null ? s3Service.uploadFileAndGetUrl(request.getImage()) : null)
                         .user(user)
                         .build()
         );
