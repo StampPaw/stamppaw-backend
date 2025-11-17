@@ -47,7 +47,7 @@ public class CompanionService {
 
     @Transactional(readOnly = true)
     public Page<CompanionResponse> getAllCompanion(Pageable pageable) {
-        Page<Companion> companions = companionRepository.findAll(pageable);
+        Page<Companion> companions = companionRepository.findAllOrderByregisteredAt(pageable);
         return companions.map(CompanionResponse::fromEntity);
     }
 
@@ -76,7 +76,7 @@ public class CompanionService {
                 CompanionManageDto.builder()
                         .title(request.getTitle())
                         .content(request.getContent())
-                        .image(s3Service.uploadFileAndGetUrl(request.getImage()))
+                        .image(request.getImage() != null ? s3Service.uploadFileAndGetUrl(request.getImage()) : null)
                         .build()
         );
     }
