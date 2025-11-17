@@ -1,15 +1,20 @@
 package org.example.stamppaw_backend.user.service;
 
 import jakarta.transaction.Transactional;
-import java.io.File;
-import java.io.IOException;
+import java.util.List;
+
 import lombok.RequiredArgsConstructor;
 import org.example.stamppaw_backend.common.S3Service;
 import org.example.stamppaw_backend.common.exception.ErrorCode;
 import org.example.stamppaw_backend.common.exception.StampPawException;
+
+import org.example.stamppaw_backend.dog.dto.response.DogResponse;
+import org.example.stamppaw_backend.dog.repository.DogRepository;
+
 import org.example.stamppaw_backend.user.dto.response.UserResponseDto;
 import org.example.stamppaw_backend.user.entity.User;
 import org.example.stamppaw_backend.user.repository.UserRepository;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final DogRepository dogRepository;
     private final S3Service s3Service;
 
     public boolean isNicknameDuplicate(String nickname) {
@@ -31,8 +37,19 @@ public class UserService {
     }
 
     public UserResponseDto getMyInfo(UserDetails userDetails) {
+
         User user = userRepository.findByEmail(userDetails.getUsername())
             .orElseThrow(() -> new StampPawException(ErrorCode.USER_NOT_FOUND));
+
+        List<DogResponse> dogs = dogRepository.findAllByUserOrderByIdAsc(user)
+            .stream()
+            .map(DogResponse::from)
+            .toList();
+
+
+        int recordCount = 0;
+        int followerCount = 0;
+        int followingCount = 0;
 
         return new UserResponseDto(
             user.getId(),
@@ -40,7 +57,11 @@ public class UserService {
             user.getEmail(),
             user.getRegion(),
             user.getBio(),
-            user.getProfileImage()
+            user.getProfileImage(),
+            recordCount,
+            followerCount,
+            followingCount,
+            dogs
         );
     }
 
@@ -68,13 +89,22 @@ public class UserService {
 
         userRepository.save(user);
 
+        List<DogResponse> dogs = dogRepository.findAllByUserOrderByIdAsc(user)
+            .stream()
+            .map(DogResponse::from)
+            .toList();
+
         return new UserResponseDto(
             user.getId(),
             user.getNickname(),
             user.getEmail(),
             user.getRegion(),
             user.getBio(),
-            user.getProfileImage()
+            user.getProfileImage(),
+            0,
+            0,
+            0,
+            dogs
         );
     }
 }

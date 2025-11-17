@@ -16,7 +16,7 @@ public class DogResponse {
     private String breed;
     private int age;
     private String character;
-    private String image_Url;
+    private String image_url;
 
     public static DogResponse from(Dog dog) {
         return DogResponse.builder()
@@ -25,7 +25,7 @@ public class DogResponse {
                 .breed(dog.getBreed())
                 .age(dog.getAge())
                 .character(dog.getCharacter())
-                .image_Url(dog.getImage_url())
+                .image_url(dog.getImage_url())
                 .build();
     }
 }
