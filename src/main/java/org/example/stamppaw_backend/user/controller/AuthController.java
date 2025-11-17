@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.stamppaw_backend.user.dto.request.LoginRequest;
 import org.example.stamppaw_backend.user.dto.request.SignupRequest;
+import org.example.stamppaw_backend.user.dto.response.LoginResponse;
 import org.example.stamppaw_backend.user.service.AuthService;
 import org.example.stamppaw_backend.user.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -29,9 +30,8 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequest request) {
-        String token = authService.login(request);
-        return ResponseEntity.ok("Bearer " + token);
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
+        return ResponseEntity.ok(authService.login(request));
     }
 
     @PostMapping("/logout")

@@ -6,6 +6,8 @@ import org.example.stamppaw_backend.common.exception.StampPawException;
 import org.example.stamppaw_backend.config.JwtTokenProvider;
 import org.example.stamppaw_backend.user.dto.request.LoginRequest;
 import org.example.stamppaw_backend.user.dto.request.SignupRequest;
+import org.example.stamppaw_backend.user.dto.response.LoginResponse;
+import org.example.stamppaw_backend.user.dto.response.UserDto;
 import org.example.stamppaw_backend.user.entity.Role;
 import org.example.stamppaw_backend.user.entity.User;
 import org.example.stamppaw_backend.user.repository.UserRepository;
@@ -44,7 +46,9 @@ public class AuthService {
         return "회원가입이 완료되었습니다.";
     }
 
-    public String login(LoginRequest request) {
+    // 로그인
+    public LoginResponse login(LoginRequest request) {
+
         User user = userRepository.findByEmail(request.getEmail())
             .orElseThrow(() -> new StampPawException(ErrorCode.AUTH_USER_NOT_FOUND));
 
@@ -52,6 +56,11 @@ public class AuthService {
             throw new StampPawException(ErrorCode.INVALID_REQUEST);
         }
 
-        return jwtTokenProvider.createToken(user.getEmail(), user.getRole().name());
+        String token = jwtTokenProvider.createToken(user.getEmail(), user.getRole().name());
+
+        return LoginResponse.builder()
+            .token(token)
+            .user(UserDto.fromEntity(user))
+            .build();
     }
 }
