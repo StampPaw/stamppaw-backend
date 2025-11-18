@@ -69,6 +69,7 @@ public class UserService {
     public UserResponseDto updateMyInfo(
         UserDetails userDetails,
         String nickname,
+        String bio,
         MultipartFile profileImage
     ) {
 
@@ -80,6 +81,10 @@ public class UserService {
                 throw new StampPawException(ErrorCode.DUPLICATE_NICKNAME);
             }
             user.setNickname(nickname);
+        }
+
+        if (bio != null) {
+            user.setBio(bio);
         }
 
         if (profileImage != null && !profileImage.isEmpty()) {

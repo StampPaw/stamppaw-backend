@@ -26,9 +26,10 @@ public class UserController {
     public UserResponseDto updateMyInfo(
         @AuthenticationPrincipal UserDetails userDetails,
         @RequestPart(value = "nickname", required = false) String nickname,
+        @RequestPart(value = "bio", required = false) String bio,
         @RequestPart(value = "profileImage", required = false) MultipartFile profileImage
     ) {
-        return userService.updateMyInfo(userDetails, nickname, profileImage);
+        return userService.updateMyInfo(userDetails, nickname, bio, profileImage);
     }
 
 }
