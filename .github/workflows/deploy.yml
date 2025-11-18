@@ -24,18 +24,18 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
+      # 🔥 여기! application.yml 정확한 위치에 생성
+      - name: Create application.yml
+        run: |
+          mkdir -p src/main/resources
+          echo "${{ secrets.APPLICATION }}" > src/main/resources/application.yml
+
       - name: Print project structure
         run: |
           echo "===== CURRENT DIRECTORY ====="
           pwd
           echo "===== FILE TREE ====="
           ls -R .
-
-      # 🔥 여기! application.yml 정확한 위치에 생성
-      - name: Create application.yml
-        run: |
-          mkdir -p src/main/resources
-          echo "${{ secrets.APPLICATION }}" > src/main/resources/application.yml
 
       - name: Check application.yml path
         run: |
