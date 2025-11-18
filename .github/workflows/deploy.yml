@@ -31,26 +31,23 @@ jobs:
           echo "===== FILE TREE ====="
           ls -R .
 
-      # 🔥 application.yml은 빌드 전에 생성해야 함
+      # 🔥 여기! application.yml 정확한 위치에 생성
       - name: Create application.yml
         run: |
-          echo "${{ secrets.APPLICATION }}" > ./stamppaw-backend/src/main/resources/application.yml
+          mkdir -p src/main/resources
+          echo "${{ secrets.APPLICATION }}" > src/main/resources/application.yml
 
-      # 🔥 경로 제대로 체크
       - name: Check application.yml path
         run: |
-          cat ./stamppaw-backend/src/main/resources/application.yml
+          echo "===== application.yml ====="
+          cat src/main/resources/application.yml
 
-      # 🔥 Gradle build는 backend 디렉토리에서 수행
       - name: Build Spring Boot jar
-        working-directory: stamppaw-backend
         run: |
           chmod +x ./gradlew
           ./gradlew clean --no-build-cache build -x test
 
-      # 🔥 JAR 검사도 backend 기준으로
       - name: Verify built JAR
-        working-directory: stamppaw-backend
         run: |
           echo "📦 빌드된 JAR 확인 중..."
           ls -lh build/libs
@@ -59,25 +56,20 @@ jobs:
           echo "🔍 application.yml 반영 여부:"
           jar tf build/libs/*SNAPSHOT.jar | grep application.yml || echo "❌ application.yml 누락됨"
 
-      # 🔐 Docker Hub 로그인
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # 🐳 Docker build & push
       - name: Build and push Docker image
         run: |
-          echo "🐳 Docker 이미지 빌드 중..."
           docker build --no-cache \
             -t ${{ secrets.DOCKER_USERNAME }}/stamppaw:latest \
             --platform linux/amd64 \
-            -f stamppaw-backend/Dockerfile stamppaw-backend
-          echo "🚀 Docker Hub 푸시 중..."
+            -f Dockerfile .
           docker push ${{ secrets.DOCKER_USERNAME }}/stamppaw:latest
 
-      # 🚀 SSH 접속 후 배포
       - name: Deploy via SSH to EC2
         uses: appleboy/ssh-action@v1.1.0
         with:
