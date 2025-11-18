@@ -24,26 +24,33 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
+      - name: Print project structure
+        run: |
+          echo "===== CURRENT DIRECTORY ====="
+          pwd
+          echo "===== FILE TREE ====="
+          ls -R .
+
       # 🔥 application.yml은 빌드 전에 생성해야 함
       - name: Create application.yml
         run: |
-          echo "${{ secrets.APPLICATION }}" > ./stamppaw_backend/src/main/resources/application.yml
+          echo "${{ secrets.APPLICATION }}" > ./stamppaw-backend/src/main/resources/application.yml
 
       # 🔥 경로 제대로 체크
       - name: Check application.yml path
         run: |
-          cat ./stamppaw_backend/src/main/resources/application.yml
+          cat ./stamppaw-backend/src/main/resources/application.yml
 
       # 🔥 Gradle build는 backend 디렉토리에서 수행
       - name: Build Spring Boot jar
-        working-directory: stamppaw_backend
+        working-directory: stamppaw-backend
         run: |
           chmod +x ./gradlew
           ./gradlew clean --no-build-cache build -x test
 
       # 🔥 JAR 검사도 backend 기준으로
       - name: Verify built JAR
-        working-directory: stamppaw_backend
+        working-directory: stamppaw-backend
         run: |
           echo "📦 빌드된 JAR 확인 중..."
           ls -lh build/libs
@@ -66,7 +73,7 @@ jobs:
           docker build --no-cache \
             -t ${{ secrets.DOCKER_USERNAME }}/stamppaw:latest \
             --platform linux/amd64 \
-            -f stamppaw_backend/Dockerfile stamppaw_backend
+            -f stamppaw-backend/Dockerfile stamppaw-backend
           echo "🚀 Docker Hub 푸시 중..."
           docker push ${{ secrets.DOCKER_USERNAME }}/stamppaw:latest
 
