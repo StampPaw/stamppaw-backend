@@ -44,8 +44,6 @@ jobs:
           ls -lh build/libs
           echo "🔍 PostgreSQL 드라이버 포함 여부:"
           jar tf build/libs/*SNAPSHOT.jar | grep postgresql || echo "❌ PostgreSQL 드라이버 없음"
-          echo "🔍 Hibernate Driver 클래스 포함 여부:"
-          jar tf build/libs/*SNAPSHOT.jar | grep "org/postgresql"
           echo "🔍 application.yml 반영 여부:"
           jar tf build/libs/*SNAPSHOT.jar | grep application.yml || echo "❌ application.yml 누락됨"
 
