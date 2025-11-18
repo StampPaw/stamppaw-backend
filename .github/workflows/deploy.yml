@@ -27,13 +27,11 @@ jobs:
       # ✅ application.yml은 빌드 전에 생성해야 함
       - name: Create application.yml
         run: |
-          mkdir -p ./src/main/resources
           echo "${{ secrets.APPLICATION }}" > ./src/main/resources/application.yml
 
       - name: Check application.yml path
         run: |
-          echo "===== Checking application.yml existence ====="
-          find . -name "application.yml" || echo "❌ application.yml not found!"
+          cat ./src/main/resources/application.yml
 
       - name: Build Spring Boot jar
         run: |
@@ -47,7 +45,7 @@ jobs:
           echo "🔍 PostgreSQL 드라이버 포함 여부:"
           jar tf build/libs/*SNAPSHOT.jar | grep postgresql || echo "❌ PostgreSQL 드라이버 없음"
           echo "🔍 Hibernate Driver 클래스 포함 여부:"
-          jar tf build/libs/*SNAPSHOT.jar | grep "org/postgresql/Driver.class" || echo "❌ Driver.class 없음"
+          jar tf build/libs/*SNAPSHOT.jar | grep "org/postgresql"
           echo "🔍 application.yml 반영 여부:"
           jar tf build/libs/*SNAPSHOT.jar | grep application.yml || echo "❌ application.yml 누락됨"
 
