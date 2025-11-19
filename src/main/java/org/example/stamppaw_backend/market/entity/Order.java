@@ -44,9 +44,10 @@ public class Order extends BasicTimeEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
+    private Payment payment;
+
     @Builder.Default
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> orderItems = new ArrayList<>();
-
-
 }
