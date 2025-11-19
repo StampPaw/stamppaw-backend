@@ -23,9 +23,6 @@ public class PaymentController {
     private final PaymentService paymentService;
     private final TossPaymentConfig tossPaymentConfig;
 
-    /**
-     * 결제 준비 (Checkout) - 프론트엔드에서 결제 버튼 누르면 이 API 호출
-     */
     @PostMapping("/checkout")
     public ResponseEntity<?> checkout(@RequestBody @Valid PaymentRequest request,
                                       BindingResult bindingResult) {
@@ -42,9 +39,6 @@ public class PaymentController {
         ));
     }
 
-    /**
-     * 결제 성공 시 호출되는 API - Toss 결제 완료 후 프론트엔드에서 이 엔드포인트로 redirect 또는 API 요청
-     */
     @GetMapping("/success")
     public ResponseEntity<?> paymentSuccess(
             @RequestParam String paymentKey,
@@ -64,9 +58,6 @@ public class PaymentController {
         }
     }
 
-    /**
-     * 결제 실패 처리
-     */
     @GetMapping("/fail")
     public ResponseEntity<?> paymentFail(
             @RequestParam(required = false) String message

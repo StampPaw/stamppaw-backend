@@ -14,7 +14,6 @@ public class TossPaymentResponse {
     @JsonProperty("receipt")
     private Receipt receipt;
 
-    // 향후 필요 가능성이 높은 핵심 필드
     @JsonProperty("orderId")
     private String orderId;
 
