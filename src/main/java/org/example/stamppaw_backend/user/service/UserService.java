@@ -1,6 +1,6 @@
 package org.example.stamppaw_backend.user.service;
 
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
@@ -72,7 +72,6 @@ public class UserService {
         String bio,
         MultipartFile profileImage
     ) {
-
         User user = userRepository.findByEmail(userDetails.getUsername())
             .orElseThrow(() -> new StampPawException(ErrorCode.USER_NOT_FOUND));
 
@@ -94,18 +93,21 @@ public class UserService {
 
         userRepository.save(user);
 
-        List<DogResponse> dogs = dogRepository.findAllByUserOrderByIdAsc(user)
+        User updated = userRepository.findById(user.getId())
+            .orElseThrow(() -> new StampPawException(ErrorCode.USER_NOT_FOUND));
+
+        List<DogResponse> dogs = dogRepository.findAllByUserOrderByIdAsc(updated)
             .stream()
             .map(DogResponse::from)
             .toList();
 
         return new UserResponseDto(
-            user.getId(),
-            user.getNickname(),
-            user.getEmail(),
-            user.getRegion(),
-            user.getBio(),
-            user.getProfileImage(),
+            updated.getId(),
+            updated.getNickname(),
+            updated.getEmail(),
+            updated.getRegion(),
+            updated.getBio(),
+            updated.getProfileImage(),
             0,
             0,
             0,
