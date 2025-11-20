@@ -65,7 +65,7 @@ public class OrderService {
                 .shippingAddress(request.getShippingAddress())
                 .shippingMobile(request.getShippingMobile())
                 .shippingStatus(ShippingStatus.READY)
-                .shippingFee(BigDecimal.ZERO)
+                .shippingFee(request.getShippingFee())
                 .build();
 
         //CartItem → OrderItem
@@ -84,6 +84,8 @@ public class OrderService {
         order.setOrderItems(orderItems);
 
         orderRepository.save(order);
+
+        log.info("🚩 주문생성 후 장바구니 삭제 : ", selectedItems);
 
         //선택한 장바구니 항목 삭제
         cartItemRepository.deleteAll(selectedItems);
