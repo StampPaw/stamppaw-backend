@@ -4,8 +4,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.stamppaw_backend.config.TossPaymentConfig;
+import org.example.stamppaw_backend.market.dto.request.PaymentConfirmRequest;
 import org.example.stamppaw_backend.market.dto.request.PaymentRequest;
-import org.example.stamppaw_backend.market.entity.Payment;
+import org.example.stamppaw_backend.market.dto.response.PaymentResponse;
 import org.example.stamppaw_backend.market.service.PaymentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,23 +32,27 @@ public class PaymentController {
             return ResponseEntity.badRequest().body("결제 요청 데이터가 올바르지 않습니다.");
         }
 
-        Payment payment = paymentService.preparePayment(request);
+        PaymentResponse response = paymentService.preparePayment(request);
 
         return ResponseEntity.ok(Map.of(
-                "payment", payment,
+                "payment", response,
                 "clientKey", tossPaymentConfig.getClientKey()
         ));
     }
 
-    @GetMapping("/success")
-    public ResponseEntity<?> paymentSuccess(
-            @RequestParam String paymentKey,
-            @RequestParam String orderId,
-            @RequestParam Long amount
-    ) {
+    @PostMapping("/confirm")
+    public ResponseEntity<?> paymentSuccess(@RequestBody PaymentConfirmRequest request) {
+
+        log.info("🚩 결제 승인 요청 수신 paymentKey={}", request.getPaymentKey());
+
         try {
-            Payment payment = paymentService.confirmPayment(paymentKey, orderId, amount);
-            return ResponseEntity.ok(payment);
+            PaymentResponse response = paymentService.confirmPayment(
+                    request.getPaymentKey(),
+                    request.getOrderId(),
+                    request.getAmount()
+            );
+
+            return ResponseEntity.ok(response);
 
         } catch (Exception e) {
             log.error("결제 승인 실패", e);
