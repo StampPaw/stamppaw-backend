@@ -18,6 +18,8 @@ public class UserDto {
     private String region;
     private String nickname;
     private String bio;
+    private String image;
+    private long totalPoint;
 
     public static UserDto fromEntity(User user) {
         return UserDto.builder()
@@ -28,6 +30,8 @@ public class UserDto {
                 .region(user.getRegion())
                 .nickname(user.getNickname())
                 .bio(user.getBio())
+                .image(user.getProfileImage())
+                .totalPoint(user.getTotalPoint())
                 .build();
     }
 }
