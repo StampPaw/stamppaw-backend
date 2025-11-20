@@ -1,6 +1,9 @@
 package org.example.stamppaw_backend.walk.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.example.stamppaw_backend.common.exception.ErrorCode;
+import org.example.stamppaw_backend.common.exception.StampPawException;
+import org.example.stamppaw_backend.user.entity.User;
 import org.example.stamppaw_backend.user.service.CustomUserDetails;
 import org.example.stamppaw_backend.walk.dto.request.*;
 import org.example.stamppaw_backend.walk.dto.response.*;
@@ -23,6 +26,28 @@ public class WalkController {
     private final WalkService walkService;
     private final WalkMapService walkMapService;
 
+    @GetMapping("/my")
+    public Page<WalkResponse> getMyWalks(
+            @AuthenticationPrincipal CustomUserDetails currentUser,
+            Pageable pageable
+    ) {
+        if (currentUser == null) {
+            throw new StampPawException(ErrorCode.UNAUTHORIZED);
+        }
+        User user = currentUser.getUser();
+
+        return walkService.getUserWalks(user, pageable);
+    }
+
+    // 추후 다른 사람의 산책 목록 보기 조건 확장
+    @GetMapping("/user/{userId}")
+    public Page<WalkResponse> getWalksByUser(
+            @PathVariable Long userId,
+            Pageable pageable
+    ) {
+        return walkService.getWalksByUser(userId, pageable);
+    }
+
     @PostMapping("/start")
     public ResponseEntity<WalkStartResponse> startWalk(
             @RequestBody WalkStartRequest request,
@@ -44,7 +69,8 @@ public class WalkController {
     @PostMapping("/{walkId}/end")
     public ResponseEntity<WalkEndResponse> endWalk(
             @PathVariable Long walkId,
-            @RequestBody WalkEndRequest request
+            @RequestBody WalkEndRequest request,
+            @AuthenticationPrincipal CustomUserDetails currentUser
     ) {
         WalkEndResponse response = walkService.endWalk(walkId, request);
         return ResponseEntity.ok(response);
@@ -53,10 +79,11 @@ public class WalkController {
     @PutMapping("/{walkId}/record")
     public ResponseEntity<WalkResponse> recordWalk(
             @PathVariable Long walkId,
-            @ModelAttribute WalkRecordRequest request
+            @ModelAttribute WalkRecordRequest request,
+            @AuthenticationPrincipal CustomUserDetails currentUser
     ) {
         try {
-            WalkResponse response = walkService.editWalk(walkId, request);
+            WalkResponse response = walkService.editWalk(walkId, request, currentUser.getUser());
             return ResponseEntity.ok(response);
         } catch (MultipartException e) {
             return ResponseEntity.badRequest().build();
@@ -64,8 +91,11 @@ public class WalkController {
     }
 
     @GetMapping("/{walkId}")
-    public ResponseEntity<WalkResponse> getWalkDetail(@PathVariable Long walkId) {
-        WalkResponse response = walkService.getWalkDetail(walkId);
+    public ResponseEntity<WalkResponse> getWalkDetail(
+            @PathVariable Long walkId,
+            @AuthenticationPrincipal CustomUserDetails currentUser
+    ) {
+        WalkResponse response = walkService.getWalkDetail(walkId, currentUser.getUser());
         return ResponseEntity.ok(response);
     }
 
@@ -81,8 +111,11 @@ public class WalkController {
     }
 
     @DeleteMapping("/{walkId}")
-    public ResponseEntity<Void> deleteWalk(@PathVariable Long walkId) {
-        walkService.deleteWalk(walkId);
+    public ResponseEntity<Void> deleteWalk(
+            @PathVariable Long walkId,
+            @AuthenticationPrincipal CustomUserDetails currentUser
+    ) {
+        walkService.deleteWalk(walkId, currentUser.getUser());
         return ResponseEntity.ok().build();
     }
 }

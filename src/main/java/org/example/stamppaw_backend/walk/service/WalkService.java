@@ -33,8 +33,14 @@ public class WalkService {
     private final S3Service s3Service;
     private final MissionProcessor missionProcessor;
 
+
+
     @Transactional
     public WalkStartResponse startWalk(WalkStartRequest request, User currentUser) {
+        if (request.getLat() == null || request.getLng() == null) {
+            throw new StampPawException(ErrorCode.INVALID_PARAMETER);
+        }
+
         Walk walk = Walk.builder()
                 .user(currentUser)
                 .startLat(request.getLat())
@@ -44,6 +50,7 @@ public class WalkService {
                 .build();
 
         walk = walkRepository.save(walk);
+
         walkMapService.addPoint(walk.getId(), request.getLat(), request.getLng(), request.getTimestamp());
 
         return WalkStartResponse.fromEntity(walk);
@@ -53,6 +60,10 @@ public class WalkService {
     public WalkEndResponse endWalk(Long walkId, WalkEndRequest request) {
         Walk walk = walkRepository.findById(walkId)
                 .orElseThrow(() -> new StampPawException(ErrorCode.WALK_NOT_FOUND));
+
+        if (walk.getStatus() != WalkStatus.STARTED) {
+            throw new StampPawException(ErrorCode.INVALID_WALK_STATUS);
+        }
 
         walk.setEndLat(request.getLat());
         walk.setEndLng(request.getLng());
@@ -76,17 +87,19 @@ public class WalkService {
         }
 
         walkRepository.save(walk);
-
         missionProcessor.handleWalkCompleted(walk);
 
         return WalkEndResponse.fromEntity(walk);
     }
 
-
     @Transactional
-    public WalkResponse editWalk(Long walkId, WalkRecordRequest request) {
+    public WalkResponse editWalk(Long walkId, WalkRecordRequest request, User currentUser) {
         Walk walk = walkRepository.findById(walkId)
                 .orElseThrow(() -> new StampPawException(ErrorCode.WALK_NOT_FOUND));
+
+        if (!walk.getUser().getId().equals(currentUser.getId())) {
+            throw new StampPawException(ErrorCode.UNAUTHORIZED_WALK_EDIT);
+        }
 
         Optional.ofNullable(request.getMemo())
                 .filter(m -> !m.isBlank())
@@ -94,8 +107,8 @@ public class WalkService {
 
         if (request.getPhotos() != null && !request.getPhotos().isEmpty()) {
             walk.getPhotos().clear();
-            List<String> uploadedUrls = s3Service.uploadFilesAndGetUrls(request.getPhotos());
 
+            List<String> uploadedUrls = s3Service.uploadFilesAndGetUrls(request.getPhotos());
             uploadedUrls.forEach(url -> {
                 WalkPhoto newPhoto = new WalkPhoto();
                 newPhoto.setPhotoUrl(url);
@@ -106,13 +119,19 @@ public class WalkService {
 
         walk.setStatus(WalkStatus.RECORDED);
         walkRepository.save(walk);
+
         return buildWalkResponse(walk);
     }
 
     @Transactional(readOnly = true)
-    public WalkResponse getWalkDetail(Long walkId) {
+    public WalkResponse getWalkDetail(Long walkId, User currentUser) {
         Walk walk = walkRepository.findById(walkId)
                 .orElseThrow(() -> new StampPawException(ErrorCode.WALK_NOT_FOUND));
+
+        if (!walk.getUser().getId().equals(currentUser.getId())) {
+            throw new StampPawException(ErrorCode.UNAUTHORIZED_WALK_ACCESS);
+        }
+
         return buildWalkResponse(walk);
     }
 
@@ -128,10 +147,26 @@ public class WalkService {
         return walksPage.map(this::buildWalkResponse);
     }
 
+    @Transactional(readOnly = true)
+    public Page<WalkResponse> getWalksByUser(Long userId, Pageable pageable) {
+
+        Page<Walk> walksPage = walkRepository
+                .findAllByUserIdAndStatusOrderByStartTimeDesc(
+                        userId, WalkStatus.RECORDED, pageable
+                );
+
+        return walksPage.map(this::buildWalkResponse);
+    }
+
+
     @Transactional
-    public void deleteWalk(Long walkId) {
+    public void deleteWalk(Long walkId, User currentUser) {
         Walk walk = walkRepository.findById(walkId)
                 .orElseThrow(() -> new StampPawException(ErrorCode.WALK_NOT_FOUND));
+
+        if (!walk.getUser().getId().equals(currentUser.getId())) {
+            throw new StampPawException(ErrorCode.UNAUTHORIZED_WALK_DELETE);
+        }
 
         walkRepository.delete(walk);
         log.info("🗑️ Walk deleted successfully: id={}", walkId);
@@ -152,6 +187,7 @@ public class WalkService {
         WalkResponse response = WalkResponse.fromEntity(walk);
         response.setPoints(points);
         response.setPhotoUrls(photoUrls);
+
         return response;
     }
 }
