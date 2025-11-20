@@ -1,6 +1,9 @@
 package org.example.stamppaw_backend.walk.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.example.stamppaw_backend.common.exception.ErrorCode;
+import org.example.stamppaw_backend.common.exception.StampPawException;
+import org.example.stamppaw_backend.user.entity.User;
 import org.example.stamppaw_backend.user.service.CustomUserDetails;
 import org.example.stamppaw_backend.walk.dto.request.*;
 import org.example.stamppaw_backend.walk.dto.response.*;
@@ -22,6 +25,28 @@ public class WalkController {
 
     private final WalkService walkService;
     private final WalkMapService walkMapService;
+
+    @GetMapping("/my")
+    public Page<WalkResponse> getMyWalks(
+            @AuthenticationPrincipal CustomUserDetails currentUser,
+            Pageable pageable
+    ) {
+        if (currentUser == null) {
+            throw new StampPawException(ErrorCode.UNAUTHORIZED);
+        }
+        User user = currentUser.getUser();
+
+        return walkService.getUserWalks(user, pageable);
+    }
+
+    // 추후 다른 사람의 산책 목록 보기 조건 확장
+    @GetMapping("/user/{userId}")
+    public Page<WalkResponse> getWalksByUser(
+            @PathVariable Long userId,
+            Pageable pageable
+    ) {
+        return walkService.getWalksByUser(userId, pageable);
+    }
 
     @PostMapping("/start")
     public ResponseEntity<WalkStartResponse> startWalk(
