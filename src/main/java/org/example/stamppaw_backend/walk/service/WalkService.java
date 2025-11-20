@@ -33,6 +33,8 @@ public class WalkService {
     private final S3Service s3Service;
     private final MissionProcessor missionProcessor;
 
+
+
     @Transactional
     public WalkStartResponse startWalk(WalkStartRequest request, User currentUser) {
         Walk walk = Walk.builder()
@@ -127,6 +129,18 @@ public class WalkService {
 
         return walksPage.map(this::buildWalkResponse);
     }
+
+    @Transactional(readOnly = true)
+    public Page<WalkResponse> getWalksByUser(Long userId, Pageable pageable) {
+
+        Page<Walk> walksPage = walkRepository
+                .findAllByUserIdAndStatusOrderByStartTimeDesc(
+                        userId, WalkStatus.RECORDED, pageable
+                );
+
+        return walksPage.map(this::buildWalkResponse);
+    }
+
 
     @Transactional
     public void deleteWalk(Long walkId) {
