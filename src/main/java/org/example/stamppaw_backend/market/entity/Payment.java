@@ -20,7 +20,7 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "toss_order_id", nullable = false, unique = true)
+    @Column(name = "toss_order_id", nullable = false, unique = true, length = 255)
     private String tossOrderId;
 
     @Column
@@ -50,12 +50,16 @@ public class Payment {
     @JoinColumn(name = "order_id", unique = true)
     private Order order;
 
-    public static Payment create(String tossOrderId, BigDecimal amount, String orderName) {
+    public static Payment create(String tossOrderId,
+                                 BigDecimal amount,
+                                 String orderName,
+                                 Order order ) {
         return Payment.builder()
                 .tossOrderId(tossOrderId)
                 .amount(amount)
                 .orderName(orderName)
                 .status(PaymentStatus.READY)
+                .order(order)
                 .build();
     }
 
