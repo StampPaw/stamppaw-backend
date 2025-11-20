@@ -1,5 +1,7 @@
 FROM eclipse-temurin:17-jdk
 
+ENV TZ=Asia/Seoul
+
 # jar를 둘 디렉터리 생성
 WORKDIR /app
 
