@@ -1,6 +1,8 @@
 package org.example.stamppaw_backend.market.dto.request;
 
 import lombok.*;
+
+import java.math.BigDecimal;
 import java.util.List;
 
 @Getter
@@ -17,5 +19,6 @@ public class OrderCreateRequest {
     private String shippingAddress;
     private String shippingMobile;
     private String paymentMethod;
+    private BigDecimal shippingFee;
 
 }
