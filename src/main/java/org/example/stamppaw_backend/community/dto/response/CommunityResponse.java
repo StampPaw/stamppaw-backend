@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CommunityResponse {
+    private Long id;
     private String title;
     private String content;
     private String imageUrl;
@@ -23,6 +24,7 @@ public class CommunityResponse {
 
     public static CommunityResponse from(Community community) {
         return CommunityResponse.builder()
+                .id(community.getId())
                 .title(community.getTitle())
                 .content(community.getContent())
                 .imageUrl(community.getImageUrl())
@@ -34,6 +36,7 @@ public class CommunityResponse {
 
     public static CommunityResponse fromEntity(Community community, Long totalViews) {
         return CommunityResponse.builder()
+                .id(community.getId())
                 .title(community.getTitle())
                 .content(community.getContent())
                 .imageUrl(community.getImageUrl())
