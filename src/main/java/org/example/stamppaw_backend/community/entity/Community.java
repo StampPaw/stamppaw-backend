@@ -2,6 +2,8 @@ package org.example.stamppaw_backend.community.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.example.stamppaw_backend.common.BasicTimeEntity;
+import org.example.stamppaw_backend.companion.entity.RecruitmentStatus;
 import org.example.stamppaw_backend.user.entity.User;
 
 @Entity
@@ -11,7 +13,7 @@ import org.example.stamppaw_backend.user.entity.User;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Community {
+public class Community extends BasicTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,7 +26,19 @@ public class Community {
 
     private String imageUrl;
 
+    private Long views;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "writer_id", nullable = false)
     private User user;
+
+    @Override
+    public void setPrePersist() {
+        super.setPrePersist();
+        this.views = 0L;
+    }
+
+    public void updateViews(Long views) {
+        this.views += views;
+    }
 }
