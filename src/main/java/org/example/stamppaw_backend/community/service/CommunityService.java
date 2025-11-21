@@ -67,6 +67,14 @@ public class CommunityService {
                 .build());
     }
 
+    public void deleteCommunity(Long id, Long userId) {
+        User user = userService.getUserOrException(userId);
+        Community community = getCommunityOrException(id);
+        verifyUser(user, community);
+
+        communityRepository.delete(community);
+    }
+
     public Community getCommunityOrException(Long id) {
         return communityRepository.findById(id)
                 .orElseThrow(() -> new StampPawException(ErrorCode.COMMUNITY_NOT_FOUND));

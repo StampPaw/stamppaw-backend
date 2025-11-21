@@ -49,4 +49,10 @@ public class CommunityController {
         communityService.modifyCommunity(id, request, userDetails.getUser().getId());
         return ResponseEntity.ok("수정이 완료되었습니다.");
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteCommunity(@PathVariable Long id, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        communityService.deleteCommunity(id, userDetails.getUser().getId());
+        return ResponseEntity.ok("삭제가 완료 되었습니다.");
+    }
 }
