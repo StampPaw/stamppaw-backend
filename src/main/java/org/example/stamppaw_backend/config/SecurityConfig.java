@@ -32,7 +32,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/css/**", "/js/**", "/images/**", "/assets/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/companion/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/companion/**", "/api/community/**").permitAll()
                         .requestMatchers("/api/market/products/**", "/api/payment/**").permitAll()
                         .requestMatchers("/admin/**").permitAll() // 관리자 임시허용
                         .requestMatchers("/ws-stomp/**", "/ws-stomp").permitAll()
