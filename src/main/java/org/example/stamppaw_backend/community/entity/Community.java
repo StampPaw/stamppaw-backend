@@ -3,6 +3,8 @@ package org.example.stamppaw_backend.community.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.example.stamppaw_backend.common.BasicTimeEntity;
+import org.example.stamppaw_backend.community.dto.CommunityDto;
+import org.example.stamppaw_backend.community.dto.request.CommunityModifyRequest;
 import org.example.stamppaw_backend.companion.entity.RecruitmentStatus;
 import org.example.stamppaw_backend.user.entity.User;
 
@@ -40,5 +42,13 @@ public class Community extends BasicTimeEntity {
 
     public void updateViews(Long views) {
         this.views += views;
+    }
+
+    public void updateCommunity(CommunityDto dto) {
+        this.title = dto.getTitle();
+        this.content = dto.getContent();
+        if(dto.getImage() != null) {
+            this.imageUrl = dto.getImage();
+        }
     }
 }

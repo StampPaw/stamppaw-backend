@@ -5,7 +5,9 @@ import lombok.RequiredArgsConstructor;
 import org.example.stamppaw_backend.common.S3Service;
 import org.example.stamppaw_backend.common.exception.ErrorCode;
 import org.example.stamppaw_backend.common.exception.StampPawException;
+import org.example.stamppaw_backend.community.dto.CommunityDto;
 import org.example.stamppaw_backend.community.dto.request.CommunityCreateRequest;
+import org.example.stamppaw_backend.community.dto.request.CommunityModifyRequest;
 import org.example.stamppaw_backend.community.dto.response.CommunityResponse;
 import org.example.stamppaw_backend.community.entity.Community;
 import org.example.stamppaw_backend.community.repository.CommunityRepository;
@@ -52,9 +54,28 @@ public class CommunityService {
         return CommunityResponse.fromEntity(community, total);
     }
 
+    public void modifyCommunity(Long id, CommunityModifyRequest request, Long userId) {
+        User user = userService.getUserOrException(userId);
+        Community community = getCommunityOrException(id);
+        verifyUser(user, community);
+        String imageUrl = request.getImage() != null ? s3Service.uploadFileAndGetUrl(request.getImage()) : null;
+
+        community.updateCommunity(CommunityDto.builder()
+                .title(request.getTitle())
+                .content(request.getContent())
+                .image(imageUrl)
+                .build());
+    }
+
     public Community getCommunityOrException(Long id) {
         return communityRepository.findById(id)
                 .orElseThrow(() -> new StampPawException(ErrorCode.COMMUNITY_NOT_FOUND));
+    }
+
+    private void verifyUser(User user, Community community) {
+        if(!community.getUser().equals(user)) {
+            throw new StampPawException(ErrorCode.FORBIDDEN_ACCESS);
+        }
     }
 
 }

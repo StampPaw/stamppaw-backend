@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.stamppaw_backend.community.dto.request.CommunityCreateRequest;
+import org.example.stamppaw_backend.community.dto.request.CommunityModifyRequest;
 import org.example.stamppaw_backend.community.dto.response.CommunityResponse;
 import org.example.stamppaw_backend.community.service.CommunityService;
 import org.example.stamppaw_backend.user.service.CustomUserDetails;
@@ -39,5 +40,13 @@ public class CommunityController {
         return ResponseEntity.ok(
                 communityService.getCommunity(id, request)
         );
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<String> modifyCommunity(@PathVariable Long id,
+                                                  @Valid CommunityModifyRequest request,
+                                                  @AuthenticationPrincipal CustomUserDetails userDetails) {
+        communityService.modifyCommunity(id, request, userDetails.getUser().getId());
+        return ResponseEntity.ok("수정이 완료되었습니다.");
     }
 }
