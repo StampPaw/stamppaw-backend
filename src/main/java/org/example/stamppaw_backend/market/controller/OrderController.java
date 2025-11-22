@@ -34,11 +34,11 @@ public class OrderController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<OrderListResponse>> getUserOrders(
+    public ResponseEntity<Page<OrderResponse>> getUserOrders(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             Pageable pageable
     ) {
-        Page<OrderListResponse> orders =
+        Page<OrderResponse> orders =
                 orderService.getUserOrders(userDetails.getUser().getId(), pageable);
 
         return ResponseEntity.ok(orders);

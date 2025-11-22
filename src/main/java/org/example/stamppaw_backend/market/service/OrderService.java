@@ -7,11 +7,13 @@ import org.example.stamppaw_backend.common.exception.StampPawException;
 import org.example.stamppaw_backend.market.dto.request.OrderCreateRequest;
 import org.example.stamppaw_backend.market.dto.response.OrderItemResponse;
 import org.example.stamppaw_backend.market.dto.response.OrderListResponse;
+import org.example.stamppaw_backend.market.dto.response.OrderResponse;
 import org.example.stamppaw_backend.market.entity.*;
 import org.example.stamppaw_backend.market.repository.CartItemRepository;
 import org.example.stamppaw_backend.market.repository.CartRepository;
 import org.example.stamppaw_backend.market.repository.OrderItemRepository;
 import org.example.stamppaw_backend.market.repository.OrderRepository;
+import org.example.stamppaw_backend.market.repository.projection.OrderListRow;
 import org.example.stamppaw_backend.user.entity.User;
 import org.example.stamppaw_backend.user.service.UserService;
 import org.springframework.data.domain.Page;
@@ -23,6 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -101,9 +105,36 @@ public class OrderService {
     }
 
     @Transactional(readOnly = true)
-    public Page<OrderListResponse> getUserOrders(Long userId, Pageable pageable) {
-        return orderRepository.findAllByUserId(userId, pageable)
-                .map(OrderListResponse::fromProjection);
+    public Page<OrderResponse> getUserOrders(Long userId, Pageable pageable) {
+
+        Page<OrderListRow> orderPage = orderRepository.findAllByUserId(userId, pageable);
+
+        List<Long> orderIds = orderPage.getContent().stream()
+                .map(OrderListRow::getOrderId)
+                .toList();
+
+        List<OrderItem> items = orderItemRepository.findItemsByOrderIds(orderIds);
+
+        Map<Long, List<OrderItemResponse>> itemMap = items.stream()
+                .collect(Collectors.groupingBy(
+                        oi -> oi.getOrder().getId(),
+                        Collectors.mapping(OrderItemResponse::fromEntity, Collectors.toList())
+                ));
+
+        return orderPage.map(row ->
+                new OrderResponse(
+                        row.getOrderId(),
+                        row.getStatus(),
+                        row.getTotalAmount(),
+                        row.getshippingFee(),
+                        row.getshippingName(),
+                        row.getShippingMobile(),
+                        row.getShippingAddress(),
+                        row.getShippingStatus(),
+                        row.getRegisteredAt(),
+                        itemMap.getOrDefault(row.getOrderId(), List.of())
+                )
+        );
     }
 
     public List<OrderItemResponse> getOrderItemsByOrderId(Long userId, Long orderId) {
