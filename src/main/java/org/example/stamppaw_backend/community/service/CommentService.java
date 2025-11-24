@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.stamppaw_backend.common.exception.ErrorCode;
 import org.example.stamppaw_backend.common.exception.StampPawException;
 import org.example.stamppaw_backend.community.dto.request.CommentCreateRequest;
+import org.example.stamppaw_backend.community.dto.request.CommentUpdateRequest;
 import org.example.stamppaw_backend.community.dto.response.CommentResponse;
 import org.example.stamppaw_backend.community.entity.Comment;
 import org.example.stamppaw_backend.community.entity.Community;
@@ -47,5 +48,14 @@ public class CommentService {
         Page<CommentResponse> responsePage = parent.map(CommentResponse::fromEntity);
 
         return responsePage;
+    }
+
+    public void updateComment(Long commentId, CommentUpdateRequest request, Long userId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new StampPawException(ErrorCode.COMMUNITY_NOT_FOUND));
+        if(!comment.getUser().getId().equals(userId)) {
+            throw new StampPawException(ErrorCode.FORBIDDEN_ACCESS);
+        }
+        comment.updateComment(request.getContent());
     }
 }

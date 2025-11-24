@@ -3,6 +3,7 @@ package org.example.stamppaw_backend.community.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.stamppaw_backend.community.dto.request.CommentCreateRequest;
+import org.example.stamppaw_backend.community.dto.request.CommentUpdateRequest;
 import org.example.stamppaw_backend.community.dto.response.CommentResponse;
 import org.example.stamppaw_backend.community.service.CommentService;
 import org.example.stamppaw_backend.user.service.CustomUserDetails;
@@ -35,4 +36,14 @@ public class CommentController {
 
         return ResponseEntity.ok(response);
     }
+
+    @PatchMapping("/{commentId}")
+    public ResponseEntity<String> updateComment(@PathVariable Long commentId,
+                                                @Valid @RequestBody CommentUpdateRequest request,
+                                                @AuthenticationPrincipal CustomUserDetails userDetails) {
+        commentService.updateComment(commentId, request, userDetails.getUser().getId());
+        return ResponseEntity.ok("댓글 수정 완료");
+    }
+
+
 }

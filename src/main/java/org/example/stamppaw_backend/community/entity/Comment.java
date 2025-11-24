@@ -38,4 +38,8 @@ public class Comment extends BasicTimeEntity {
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<Comment> children = new ArrayList<>();
+
+    public void updateComment(String content) {
+        this.content = content;
+    }
 }
