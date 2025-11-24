@@ -14,6 +14,7 @@ import java.util.List;
 public class CommentResponse {
     private Long id;
     private String content;
+    private Long userId;
     private String nickname;
     private String profileImage;
     private LocalDateTime createdAt;
@@ -25,6 +26,7 @@ public class CommentResponse {
         return CommentResponse.builder()
                 .id(comment.getId())
                 .content(comment.getContent())
+                .userId(comment.getUser().getId())
                 .nickname(comment.getUser().getNickname())
                 .profileImage(comment.getUser().getProfileImage())
                 .createdAt(comment.getRegisteredAt())

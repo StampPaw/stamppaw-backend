@@ -45,15 +45,23 @@ public class CommunityService {
         return mapToCommunity(communities);
     }
 
-    public CommunityResponse getCommunity(Long id, HttpServletRequest request) {
-        String sessionId = request.getSession(true).getId();
+    public CommunityResponse getCommunity(Long id, HttpServletRequest request, Long userId) {
 
+        String sessionId = request.getSession(true).getId();
         communityRedisService.increaseView(id, sessionId);
 
         Community community = getCommunityOrException(id);
         Long redisViews = communityRedisService.getViewCount(id);
         Long total = community.getViews() + redisViews;
-        return CommunityResponse.fromEntity(community, total);
+
+        Long likeCount = likeService.getLikeCount(id);
+
+        boolean isLiked = false;
+        if (userId != null) {
+            isLiked = likeService.isLiked(userService.getUserOrException(userId), community);
+        }
+
+        return CommunityResponse.fromEntity(community, total, likeCount, isLiked);
     }
 
     public void modifyCommunity(Long id, CommunityModifyRequest request, Long userId) {

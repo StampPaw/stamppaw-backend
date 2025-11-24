@@ -40,9 +40,12 @@ public class CommunityController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CommunityResponse> getCommunity (@PathVariable Long id, HttpServletRequest request) {
+    public ResponseEntity<CommunityResponse> getCommunity (@PathVariable Long id, HttpServletRequest request,
+                                                           @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        Long userId = (userDetails != null) ? userDetails.getUser().getId() : null;
         return ResponseEntity.ok(
-                communityService.getCommunity(id, request)
+                communityService.getCommunity(id, request, userId)
         );
     }
 
