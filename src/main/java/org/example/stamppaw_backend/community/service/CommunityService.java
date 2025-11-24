@@ -26,6 +26,7 @@ public class CommunityService {
     private final UserService userService;
     private final S3Service s3Service;
     private final CommunityRedisService communityRedisService;
+    private final LikeService likeService;
 
     public void createCommunity(CommunityCreateRequest request, Long userId) {
         User user = userService.getUserOrException(userId);
@@ -75,6 +76,13 @@ public class CommunityService {
         communityRepository.delete(community);
     }
 
+    public boolean toggleLike(Long communityId, Long userId) {
+        User user = userService.getUserOrException(userId);
+        Community community = getCommunityOrException(communityId);
+
+        return likeService.toggleLike(user, community);
+    }
+
     public Community getCommunityOrException(Long id) {
         return communityRepository.findById(id)
                 .orElseThrow(() -> new StampPawException(ErrorCode.COMMUNITY_NOT_FOUND));
@@ -85,5 +93,4 @@ public class CommunityService {
             throw new StampPawException(ErrorCode.FORBIDDEN_ACCESS);
         }
     }
-
 }
