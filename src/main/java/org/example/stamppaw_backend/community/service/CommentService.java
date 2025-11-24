@@ -21,12 +21,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class CommentService {
     private final CommentRepository commentRepository;
-    private final CommunityService communityService;
     private final UserService userService;
 
-    public void createComment(CommentCreateRequest request, Long userId) {
+    public void createComment(Community community, CommentCreateRequest request, Long userId) {
         User user = userService.getUserOrException(userId);
-        Community community = communityService.getCommunityOrException(request.getCommunityId());
 
         Comment parent = null;
         if(request.getParentId() != null) {
@@ -66,5 +64,10 @@ public class CommentService {
             throw new StampPawException(ErrorCode.FORBIDDEN_ACCESS);
         }
         commentRepository.delete(comment);
+    }
+
+    @Transactional(readOnly = true)
+    public Long getCommentCount(Long communityId) {
+        return commentRepository.countByCommunityId(communityId);
     }
 }

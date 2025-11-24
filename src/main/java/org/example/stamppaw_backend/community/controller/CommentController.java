@@ -5,7 +5,9 @@ import lombok.RequiredArgsConstructor;
 import org.example.stamppaw_backend.community.dto.request.CommentCreateRequest;
 import org.example.stamppaw_backend.community.dto.request.CommentUpdateRequest;
 import org.example.stamppaw_backend.community.dto.response.CommentResponse;
+import org.example.stamppaw_backend.community.entity.Community;
 import org.example.stamppaw_backend.community.service.CommentService;
+import org.example.stamppaw_backend.community.service.CommunityService;
 import org.example.stamppaw_backend.user.service.CustomUserDetails;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,11 +22,13 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/comments")
 public class CommentController {
     private final CommentService commentService;
+    private final CommunityService communityService;
 
     @PostMapping
     public ResponseEntity<String> createComment(@Valid @RequestBody CommentCreateRequest request,
                                                 @AuthenticationPrincipal CustomUserDetails userDetails) {
-        commentService.createComment(request, userDetails.getUser().getId());
+        Community community = communityService.getCommunityOrException(request.getCommunityId());
+        commentService.createComment(community, request, userDetails.getUser().getId());
         return ResponseEntity.ok("댓글 생성 완료");
     }
 

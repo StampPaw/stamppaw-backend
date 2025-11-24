@@ -27,6 +27,7 @@ public class CommunityService {
     private final S3Service s3Service;
     private final CommunityRedisService communityRedisService;
     private final LikeService likeService;
+    private final CommentService commentService;
 
     public void createCommunity(CommunityCreateRequest request, Long userId) {
         User user = userService.getUserOrException(userId);
@@ -41,7 +42,7 @@ public class CommunityService {
     @Transactional(readOnly = true)
     public Page<CommunityResponse> getCommunities(Pageable pageable) {
         Page<Community> communities = communityRepository.findAll(pageable);
-        return communities.map(CommunityResponse::from);
+        return mapToCommunity(communities);
     }
 
     public CommunityResponse getCommunity(Long id, HttpServletRequest request) {
@@ -92,5 +93,17 @@ public class CommunityService {
         if(!community.getUser().equals(user)) {
             throw new StampPawException(ErrorCode.FORBIDDEN_ACCESS);
         }
+    }
+
+    private Page<CommunityResponse> mapToCommunity(Page<Community> communities) {
+        return communities.map(community -> {
+            CommunityResponse response = CommunityResponse.from(community);
+            Long likeCount = likeService.getLikeCount(community.getId());
+            Long commentCount = commentService.getCommentCount(community.getId());
+
+            response.setLikeCount(likeCount);
+            response.setCommentCount(commentCount);
+            return response;
+        });
     }
 }

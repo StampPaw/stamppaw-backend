@@ -20,6 +20,8 @@ public class CommunityResponse {
     private String imageUrl;
     private Long views;
     private LocalDateTime registeredAt;
+    private Long likeCount;
+    private Long commentCount;
     private UserDto user;
 
     public static CommunityResponse from(Community community) {
