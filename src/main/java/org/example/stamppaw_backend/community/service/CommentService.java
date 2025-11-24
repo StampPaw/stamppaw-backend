@@ -52,10 +52,19 @@ public class CommentService {
 
     public void updateComment(Long commentId, CommentUpdateRequest request, Long userId) {
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new StampPawException(ErrorCode.COMMUNITY_NOT_FOUND));
+                .orElseThrow(() -> new StampPawException(ErrorCode.COMMENT_NOT_FOUND));
         if(!comment.getUser().getId().equals(userId)) {
             throw new StampPawException(ErrorCode.FORBIDDEN_ACCESS);
         }
         comment.updateComment(request.getContent());
+    }
+
+    public void deleteComment(Long commentId, Long userId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new StampPawException(ErrorCode.COMMENT_NOT_FOUND));
+        if(!comment.getUser().getId().equals(userId)) {
+            throw new StampPawException(ErrorCode.FORBIDDEN_ACCESS);
+        }
+        commentRepository.delete(comment);
     }
 }
