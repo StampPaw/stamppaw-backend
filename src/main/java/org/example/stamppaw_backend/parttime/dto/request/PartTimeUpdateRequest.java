@@ -8,4 +8,5 @@ public class PartTimeUpdateRequest {
     private String title;
     private String content;
     private MultipartFile image;
+    private Boolean deleteImage;
 }

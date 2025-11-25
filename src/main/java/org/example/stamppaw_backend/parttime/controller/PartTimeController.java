@@ -69,10 +69,11 @@ public class PartTimeController {
     /** 삭제 */
     @DeleteMapping("/{postId}")
     public ResponseEntity<String> deletePartTime(@PathVariable Long postId,
-        @AuthenticationPrincipal User user) {
-        partTimeService.deletePartTime(postId, user.getId());
+        @AuthenticationPrincipal CustomUserDetails userDetails) {
+        partTimeService.deletePartTime(postId, userDetails.getUser().getId());
         return ResponseEntity.ok("삭제가 완료되었습니다.");
     }
+
 
     /** 신청하기 */
     @PostMapping("/{postId}/apply")

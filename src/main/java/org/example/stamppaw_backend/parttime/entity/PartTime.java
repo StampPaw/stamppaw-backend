@@ -49,7 +49,12 @@ public class PartTime extends BasicTimeEntity {
     public PartTimeResponse updatePartTime(PartTimeManageDto dto) {
         this.title = dto.getTitle();
         this.content = dto.getContent();
-        if(dto.getImage() != null) {
+
+        if (dto.getImage() == null || dto.getImage().isBlank()) {
+            // 이미지 삭제 or 이미지 없음
+            this.imageUrl = null;
+        } else {
+            // 새 이미지 적용
             this.imageUrl = dto.getImage();
         }
 

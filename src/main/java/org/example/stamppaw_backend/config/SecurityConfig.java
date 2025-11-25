@@ -36,7 +36,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/market/products/**", "/api/payment/**").permitAll()
                         .requestMatchers("/admin/**").permitAll() // 관리자 임시허용
                         .requestMatchers("/ws-stomp/**", "/ws-stomp").permitAll()
-                        .requestMatchers("/api/parttime/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/companion/**", "/api/community/**", "/api/parttime/**").permitAll()
                     .anyRequest().authenticated()
                 )
                 .addFilterBefore(

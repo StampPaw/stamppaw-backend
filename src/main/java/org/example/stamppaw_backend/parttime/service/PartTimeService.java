@@ -72,11 +72,32 @@ public class PartTimeService {
             throw new StampPawException(ErrorCode.FORBIDDEN_ACCESS);
         }
 
+        String newImageUrl;
+
+        // 1) 삭제 요청
+        if (Boolean.TRUE.equals(request.getDeleteImage())) {
+            if (partTime.getImageUrl() != null) {
+                s3Service.deleteFile(partTime.getImageUrl());
+            }
+            newImageUrl = null;
+        }
+        // 2) 새 이미지 업로드
+        else if (request.getImage() != null && !request.getImage().isEmpty()) {
+            if (partTime.getImageUrl() != null) {
+                s3Service.deleteFile(partTime.getImageUrl());
+            }
+            newImageUrl = s3Service.uploadFileAndGetUrl(request.getImage());
+        }
+        // 3) 기존 이미지 유지
+        else {
+            newImageUrl = partTime.getImageUrl();
+        }
+
         return partTime.updatePartTime(
             PartTimeManageDto.builder()
                 .title(request.getTitle())
                 .content(request.getContent())
-                .image(request.getImage() != null ? s3Service.uploadFileAndGetUrl(request.getImage()) : null)
+                .image(newImageUrl)
                 .build()
         );
     }
