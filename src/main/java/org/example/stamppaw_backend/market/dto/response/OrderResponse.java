@@ -18,14 +18,15 @@ import java.util.stream.Collectors;
 public class OrderResponse {
 
     private Long orderId;
-
     private String status;
     private BigDecimal totalAmount;
+    private BigDecimal shippingFee;
     private String shippingName;
     private String shippingAddress;
     private String shippingMobile;
     private String shippingStatus;
     private LocalDateTime registeredAt;
+
     private List<OrderItemResponse> items;
 
     public static OrderResponse fromEntity(Order order) {
@@ -33,11 +34,13 @@ public class OrderResponse {
                 .orderId(order.getId())
                 .status(order.getStatus().name())
                 .totalAmount(order.getTotalAmount())
+                .shippingFee(order.getShippingFee())
                 .shippingName(order.getShippingName())
                 .shippingAddress(order.getShippingAddress())
                 .shippingMobile(order.getShippingMobile())
                 .shippingStatus(order.getShippingStatus().name())
                 .registeredAt(order.getRegisteredAt())
+
                 .items(order.getOrderItems().stream()
                         .map(OrderItemResponse::fromEntity)
                         .collect(Collectors.toList()))

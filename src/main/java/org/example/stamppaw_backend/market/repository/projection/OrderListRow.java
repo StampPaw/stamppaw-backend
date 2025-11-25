@@ -7,8 +7,11 @@ public interface OrderListRow {
     Long getOrderId();
     BigDecimal getTotalAmount();
     String getStatus();
+    BigDecimal getshippingFee();
+    String getshippingName();
+    String getShippingMobile();
+    String getShippingAddress();
     String getShippingStatus();
     LocalDateTime getRegisteredAt();
-    LocalDateTime getModifiedAt();
     String getUsername();
 }

@@ -3,11 +3,10 @@ package org.example.stamppaw_backend.market.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.stamppaw_backend.market.dto.request.OrderCreateRequest;
-import org.example.stamppaw_backend.market.dto.response.OrderItemResponse;
-import org.example.stamppaw_backend.market.dto.response.OrderListResponse;
-import org.example.stamppaw_backend.market.dto.response.OrderResponse;
+import org.example.stamppaw_backend.market.dto.response.*;
 import org.example.stamppaw_backend.market.entity.Order;
 import org.example.stamppaw_backend.market.entity.OrderStatus;
+import org.example.stamppaw_backend.market.entity.ShippingStatus;
 import org.example.stamppaw_backend.market.service.OrderService;
 import org.example.stamppaw_backend.user.service.CustomUserDetails;
 import org.springframework.data.domain.Page;
@@ -16,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -34,25 +34,37 @@ public class OrderController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<OrderListResponse>> getUserOrders(
+    public ResponseEntity<Page<OrderResponse>> getUserOrders(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            Pageable pageable
+            Pageable pageable,
+            @RequestParam(required = false, defaultValue = "ORDER") String orderStatus
     ) {
-        Page<OrderListResponse> orders =
-                orderService.getUserOrders(userDetails.getUser().getId(), pageable);
+        Page<OrderResponse> orders =
+                orderService.getUserOrders(userDetails.getUser().getId(), pageable, orderStatus);
 
         return ResponseEntity.ok(orders);
     }
 
-    @GetMapping("/{orderId}/items")
-    public ResponseEntity<List<OrderItemResponse>> getOrderItems(
+    @GetMapping("/{orderId}/detail")
+    public ResponseEntity<OrderDetailResponse> getOrderDetail(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long orderId
     ) {
+        Long userId = userDetails.getUser().getId();
 
-        List<OrderItemResponse> items = orderService.getOrderItemsByOrderId(userDetails.getUser().getId(), orderId);
+        OrderDetailResponse response = orderService.getOrderDetail(userId, orderId);
 
-        return ResponseEntity.ok(items);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/shipping")
+    public ResponseEntity<List<ShippingStatusResponse>> getAllStatuses() {
+
+        List<ShippingStatusResponse> list = Arrays.stream(ShippingStatus.values())
+                .map(st -> new ShippingStatusResponse(st.name(), st.getLabel()))
+                .toList();
+
+        return ResponseEntity.ok(list);
     }
 
     @PatchMapping("/{orderId}/status")
@@ -64,4 +76,5 @@ public class OrderController {
         orderService.updateOrderStatus(userDetails.getUser().getId(), orderId, status);
         return ResponseEntity.ok().build();
     }
+
 }
