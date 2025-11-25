@@ -120,4 +120,13 @@ public class PartTimeController {
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(partTimeApplyService.getUserApply(pageable, userDetails.getUser().getId()));
     }
+
+    @GetMapping("/apply/my")
+    public ResponseEntity<Page<PartTimeUserApplyResponse>> getUserApply(
+        @AuthenticationPrincipal User user,
+        Pageable pageable
+    ) {
+        return ResponseEntity.ok(partTimeService.getUserApply(pageable, user.getId()));
+    }
+
 }

@@ -11,8 +11,10 @@ import org.example.stamppaw_backend.parttime.dto.request.PartTimeCreateRequest;
 import org.example.stamppaw_backend.parttime.dto.request.PartTimeUpdateRequest;
 import org.example.stamppaw_backend.parttime.dto.response.PartTimeApplyResponse;
 import org.example.stamppaw_backend.parttime.dto.response.PartTimeResponse;
+import org.example.stamppaw_backend.parttime.dto.response.PartTimeUserApplyResponse;
 import org.example.stamppaw_backend.parttime.entity.PartTime;
 import org.example.stamppaw_backend.parttime.entity.PartTimeApply;
+import org.example.stamppaw_backend.parttime.repository.PartTimeApplyRepository;
 import org.example.stamppaw_backend.parttime.repository.PartTimeRepository;
 import org.example.stamppaw_backend.user.entity.User;
 import org.example.stamppaw_backend.user.service.UserService;
@@ -29,6 +31,8 @@ public class PartTimeService {
     private final UserService userService;
     private final S3Service s3Service;
     private final PartTimeApplyService partTimeApplyService;
+    private final PartTimeApplyRepository partTimeApplyRepository;
+
 
     public PartTimeResponse createPartTime(PartTimeCreateRequest request, Long userId) {
         User user = userService.getUserOrException(userId);
@@ -151,4 +155,14 @@ public class PartTimeService {
             throw new StampPawException(ErrorCode.FORBIDDEN_ACCESS);
         }
     }
+
+    @Transactional(readOnly = true)
+    public Page<PartTimeUserApplyResponse> getUserApply(Pageable pageable, Long userId) {
+        User user = userService.getUserOrException(userId);
+        Page<PartTimeApply> applies = partTimeApplyRepository.findByApplicant(user, pageable);
+        return applies.map(PartTimeUserApplyResponse::from);
+    }
+
+
+
 }

@@ -16,6 +16,8 @@ public class PartTimeUserApplyResponse {
 
     private Long id;
     private Long partTimeId;
+    private String title;
+    private String imageUrl;    // 이미지
     private PartTimeDto partTimeDto;
     private String status;
 
