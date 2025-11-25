@@ -61,8 +61,8 @@ public class CompanionController {
     }
 
     @DeleteMapping("/{postId}")
-    public ResponseEntity<String> deleteCompanion(@PathVariable Long postId, @AuthenticationPrincipal User user) {
-        companionService.deleteCompanion(postId, user.getId());
+    public ResponseEntity<String> deleteCompanion(@PathVariable Long postId, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        companionService.deleteCompanion(postId, userDetails.getUser().getId());
         return ResponseEntity.ok("삭제가 완료되었습니다.");
     }
 
@@ -104,5 +104,13 @@ public class CompanionController {
                                                                          @AuthenticationPrincipal CustomUserDetails userDetails) {
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(companionApplyService.getUserApply(pageable, userDetails.getUser().getId()));
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<Page<CompanionResponse>> searchCompanion(@RequestParam(value = "title", defaultValue = "") String title,
+                                                   @RequestParam(value = "page", defaultValue = "0") int page,
+                                                   @RequestParam(value = "size", defaultValue = "3") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(companionService.searchCompanions(pageable, title));
     }
 }
