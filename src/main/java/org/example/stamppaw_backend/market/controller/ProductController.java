@@ -24,9 +24,13 @@ import java.util.Map;
 public class ProductController {
     private final ProductService productService;
 
-    @PostMapping("/products/search")
-    public Page<ProductSearchResponse> searchProducts(@RequestBody ProductSearchRequest req) {
-        Page<ProductListRow> result = productService.getProductSearch(req.getTitle(), req.getPage(), req.getSize());
+    @GetMapping("/products/search")
+    public Page<ProductSearchResponse> searchProducts(
+            @RequestParam String title,
+            @RequestParam int page,
+            @RequestParam int size
+    ) {
+        Page<ProductListRow> result = productService.getProductSearch(title, page, size);
 
         return result.map(p -> new ProductSearchResponse(
                 p.getId(),
