@@ -88,7 +88,6 @@
     </table>
   </div>
 
-  <!-- 페이지네이션 -->
   <div class="pagination" style="text-align:center; margin-top:20px;"
        th:if="${orders.totalPages > 0}">
     <a th:if="${orders.hasPrevious()}"
@@ -100,14 +99,11 @@
     <a th:href="@{/admin/orders(page=${p}, status=${selectedStatus})}"
        th:text="${p + 1}"></a>
   </span>
-    &nbsp;
     <a th:if="${orders.hasNext()}"
        th:href="@{/admin/orders(page=${orders.number + 1}, status=${selectedStatus})}"  style="margin: 0 5px;">
       다음
     </a>
   </div>
-
-
 </div>
 
 <!-- scripts fragment(비어있어도 반드시 필요) -->
