@@ -66,7 +66,8 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOriginPatterns(List.of(
                 "http://localhost:5173",
-                "https://stamppaw-frontend.vercel.app"
+                "https://stamppaw-frontend.vercel.app",
+                "https://stamp-paw.duckdns.org"
         ));
         config.setAllowedMethods(List.of(
                 "GET",
