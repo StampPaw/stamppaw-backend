@@ -27,9 +27,15 @@ public class WalkController {
     private final WalkService walkService;
     private final WalkMapService walkMapService;
 
-    @PostMapping("/search")
-    public Page<WalkSearchResponse> search(@RequestBody WalkSearchRequest request) {
-        Page<Walk> result = walkService.search(request);
+    @GetMapping("/search")
+    public Page<WalkSearchResponse> search(
+            @AuthenticationPrincipal CustomUserDetails currentUser,
+            @RequestParam(required = false) String memo,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Long userId = currentUser.getUser().getId();
+        Page<Walk> result = walkService.search(userId, memo, page, size);
         return result.map(WalkSearchResponse::fromEntity);
     }
 
