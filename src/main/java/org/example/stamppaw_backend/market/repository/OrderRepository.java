@@ -12,19 +12,25 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 public interface OrderRepository  extends JpaRepository<Order, Long> {
 
     @Query("""
         SELECT o.id AS orderId,
                o.totalAmount AS totalAmount,
                o.status AS status,
+               o.shippingFee AS shippingFee,
+               o.shippingName AS shippingName,
+               o.shippingMobile AS shippingMobile,
+               o.shippingAddress AS shippingAddress,
                o.shippingStatus AS shippingStatus,
                o.registeredAt AS registeredAt,
-               o.modifiedAt AS modifiedAt,
                u.nickname AS username
         FROM Order o
         JOIN o.user u
         WHERE (:status IS NULL OR o.status = :status)
+        Order by o.id DESC
     """)
     Page<OrderListRow> findAllSummaries(
             @Param("status") OrderStatus status,
@@ -32,17 +38,24 @@ public interface OrderRepository  extends JpaRepository<Order, Long> {
     );
 
     @Query("""
-        SELECT
-            o.id AS orderId,
-            o.totalAmount AS totalAmount,
-            o.status AS status,
-            o.shippingStatus AS shippingStatus,
-            o.registeredAt AS registeredAt,
-            o.modifiedAt AS modifiedAt
+        SELECT o.id AS orderId,
+               o.totalAmount AS totalAmount,
+               o.status AS status,
+               o.shippingFee AS shippingFee,
+               o.shippingName AS shippingName,
+               o.shippingMobile AS shippingMobile,
+               o.shippingAddress AS shippingAddress,
+               o.shippingStatus AS shippingStatus,
+               o.registeredAt AS registeredAt
         FROM Order o
-        WHERE o.user.id = :userId
+        WHERE o.user.id = :userId AND o.status = :orderStatus
+        Order by o.id DESC
     """)
-    Page<OrderListRow> findAllByUserId(@Param("userId") Long userId, Pageable pageable);
+    Page<OrderListRow> findAllByUserIdAndStatus(@Param("userId") Long userId,
+                                       @Param("orderStatus") OrderStatus orderStatus,
+                                       Pageable pageable);
+
+
 
     @Transactional
     @Modifying
@@ -59,4 +72,15 @@ public interface OrderRepository  extends JpaRepository<Order, Long> {
             @Param("orderId") Long orderId,
             @Param("shippingStatus")ShippingStatus shippingStatus
     );
+
+    @Query("""
+        SELECT o FROM Order o
+        left join fetch o.orderItems oi
+        left join fetch oi.product p
+        left join fetch o.payment pay
+        where o.id = :orderId
+        Order by o.id DESC
+    """)
+    Optional<Order> findDetailByOrderId(@Param("orderId") Long orderId);
+
 }

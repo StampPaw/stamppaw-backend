@@ -5,13 +5,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.stamppaw_backend.common.exception.ErrorCode;
 import org.example.stamppaw_backend.common.exception.StampPawException;
 import org.example.stamppaw_backend.market.dto.request.OrderCreateRequest;
+import org.example.stamppaw_backend.market.dto.response.OrderDetailResponse;
 import org.example.stamppaw_backend.market.dto.response.OrderItemResponse;
 import org.example.stamppaw_backend.market.dto.response.OrderListResponse;
+import org.example.stamppaw_backend.market.dto.response.OrderResponse;
 import org.example.stamppaw_backend.market.entity.*;
 import org.example.stamppaw_backend.market.repository.CartItemRepository;
 import org.example.stamppaw_backend.market.repository.CartRepository;
 import org.example.stamppaw_backend.market.repository.OrderItemRepository;
 import org.example.stamppaw_backend.market.repository.OrderRepository;
+import org.example.stamppaw_backend.market.repository.projection.OrderListRow;
 import org.example.stamppaw_backend.user.entity.User;
 import org.example.stamppaw_backend.user.service.UserService;
 import org.springframework.data.domain.Page;
@@ -23,6 +26,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -101,26 +106,130 @@ public class OrderService {
     }
 
     @Transactional(readOnly = true)
-    public Page<OrderListResponse> getUserOrders(Long userId, Pageable pageable) {
-        return orderRepository.findAllByUserId(userId, pageable)
-                .map(OrderListResponse::fromProjection);
+    public Page<OrderResponse> getUserOrders(Long userId, Pageable pageable, String orderStatus) {
+
+        OrderStatus statusEnum = null;
+        if (orderStatus == null ||
+                orderStatus.isBlank() ||
+                orderStatus.equalsIgnoreCase("undefined")) {
+
+            statusEnum = OrderStatus.ORDER;
+        } else {
+            statusEnum = OrderStatus.valueOf(orderStatus.toUpperCase());
+        }
+
+        Page<OrderListRow> orderPage = orderRepository.findAllByUserIdAndStatus(userId, statusEnum, pageable);
+
+        List<Long> orderIds = orderPage.getContent().stream()
+                .map(OrderListRow::getOrderId)
+                .toList();
+
+        List<OrderItem> items = orderItemRepository.findItemsByOrderIds(orderIds);
+
+        Map<Long, List<OrderItemResponse>> itemMap = items.stream()
+                .collect(Collectors.groupingBy(
+                        oi -> oi.getOrder().getId(),
+                        Collectors.mapping(OrderItemResponse::fromEntity, Collectors.toList())
+                ));
+
+        return orderPage.map(row ->
+                new OrderResponse(
+                        row.getOrderId(),
+                        row.getStatus(),
+                        row.getTotalAmount(),
+                        row.getshippingFee(),
+                        row.getshippingName(),
+                        row.getShippingMobile(),
+                        row.getShippingAddress(),
+                        row.getShippingStatus(),
+                        row.getRegisteredAt(),
+                        itemMap.getOrDefault(row.getOrderId(), List.of())
+                )
+        );
     }
 
-    public List<OrderItemResponse> getOrderItemsByOrderId(Long userId, Long orderId) {
+    @Transactional(readOnly = true)
+    public OrderDetailResponse getOrderDetailForAdmin(Long orderId) {
 
-        Order order = orderRepository.findById(orderId)
+        Order order = orderRepository.findDetailByOrderId(orderId)
                 .orElseThrow(() -> new StampPawException(ErrorCode.ORDER_NOT_FOUND));
 
-        Long ownerId = order.getUser().getId();
-        if (!ownerId.equals(userId)) {
+        Payment payment = order.getPayment();
+        OrderDetailResponse.PaymentInfo paymentInfo = null;
+
+        if (payment != null) {
+            paymentInfo = OrderDetailResponse.PaymentInfo.builder()
+                    .paymentKey(payment.getPaymentKey())
+                    .status(payment.getStatus().name())
+                    .tossOrderId(payment.getTossOrderId())
+                    .method(payment.getMethod())
+                    .approvedAt(payment.getApprovedAt())
+                    .receiptUrl(payment.getReceiptUrl())
+                    .build();
+        }
+
+        return OrderDetailResponse.builder()
+                .orderId(order.getId())
+                .status(order.getStatus().name())
+                .totalAmount(order.getTotalAmount())
+                .shippingFee(order.getShippingFee())
+                .shippingName(order.getShippingName())
+                .shippingAddress(order.getShippingAddress())
+                .shippingMobile(order.getShippingMobile())
+                .shippingStatus(order.getShippingStatus().name())
+                .registeredAt(order.getRegisteredAt())
+
+                .payment(paymentInfo)
+
+                .items(order.getOrderItems().stream()
+                        .map(OrderItemResponse::fromEntity)
+                        .toList())
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    public OrderDetailResponse getOrderDetail(Long userId, Long orderId) {
+
+        Order order = orderRepository.findDetailByOrderId(orderId)
+                .orElseThrow(() -> new StampPawException(ErrorCode.ORDER_NOT_FOUND));
+
+        if (!order.getUser().getId().equals(userId)) {
             throw new StampPawException(ErrorCode.UNAUTHORIZED_ORDER_ACCESS);
         }
 
-        return orderItemRepository.findByOrderId(orderId)
-                .stream()
-                .map(OrderItemResponse::fromEntity)
-                .toList();
+        Payment payment = order.getPayment();
+        OrderDetailResponse.PaymentInfo paymentInfo = null;
+
+        if (payment != null) {
+            paymentInfo = OrderDetailResponse.PaymentInfo.builder()
+                    .paymentKey(payment.getPaymentKey())
+                    .status(payment.getStatus().name())
+                    .tossOrderId(payment.getTossOrderId())
+                    .method(payment.getMethod())
+                    .approvedAt(payment.getApprovedAt())
+                    .receiptUrl(payment.getReceiptUrl())
+                    .build();
+        }
+
+        return OrderDetailResponse.builder()
+                .orderId(order.getId())
+                .status(order.getStatus().name())
+                .totalAmount(order.getTotalAmount())
+                .shippingFee(order.getShippingFee())
+                .shippingName(order.getShippingName())
+                .shippingAddress(order.getShippingAddress())
+                .shippingMobile(order.getShippingMobile())
+                .shippingStatus(order.getShippingStatus().name())
+                .registeredAt(order.getRegisteredAt())
+
+                .payment(paymentInfo)
+
+                .items(order.getOrderItems().stream()
+                        .map(OrderItemResponse::fromEntity)
+                        .toList())
+                .build();
     }
+
 
 
     @Transactional
@@ -142,4 +251,15 @@ public class OrderService {
 
         orderRepository.updateOrderStatus(orderId, status);
     }
+
+    @Transactional
+    public void deleteOrderForAdmin(Long orderId) {
+
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new StampPawException(ErrorCode.ORDER_NOT_FOUND));
+
+        // Order 삭제 → OrderItems + Payment 자동 삭제됨
+        orderRepository.delete(order);
+    }
+
 }

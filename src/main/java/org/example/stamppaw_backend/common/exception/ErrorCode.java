@@ -65,9 +65,19 @@ public enum ErrorCode {
     // Point
     POINT_NOT_FOUND(HttpStatus.NOT_FOUND, "포인트를 찾을 수 없습니다."),
 
+    // Community
+    COMMUNITY_NOT_FOUND(HttpStatus.NOT_FOUND, "커뮤니티를 찾을 수 없습니다"),
+    PARENT_COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "부모 댓글을 찾을 수 없습니다."),
+    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "댓글을 찾을 수 없습니다."),
+
     // File / S3
     FILE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "이미지 파일 업로드에 실패했습니다."),
     FILE_DELETE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "이미지 삭제를 실패했습니다."),
+
+    //PartTime
+    PARTTIME_NOT_FOUND(HttpStatus.NOT_FOUND, "파트타임 게시글을 찾을 수 없습니다."),
+    PARTTIME_APPLY_NOT_FOUND(HttpStatus.NOT_FOUND, "알바 지원 내역을 찾을 수 없습니다."),
+    ALREADY_PARTTIME_APPLICANT(HttpStatus.BAD_REQUEST, "이미 지원한 사용자입니다."),
 
     // AUTH / TOKEN
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증이 필요합니다."),

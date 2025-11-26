@@ -17,9 +17,12 @@ public class OrderListResponse {
     private Long orderId;
     private BigDecimal totalAmount;
     private String status;
+    private BigDecimal shippingFee;
+    private String shippingName;
+    private String shippingMobile;
+    private String shippingAddress;
     private String shippingStatus;
     private LocalDateTime registeredAt;
-    private LocalDateTime modifiedAt;
     private String username;
 
     public static OrderListResponse fromProjection(OrderListRow row) {
@@ -27,11 +30,13 @@ public class OrderListResponse {
                 .orderId(row.getOrderId())
                 .totalAmount(row.getTotalAmount())
                 .status(row.getStatus())
+                .shippingFee(row.getshippingFee())
+                .shippingName(row.getshippingName())
+                .shippingMobile(row.getShippingMobile())
+                .shippingAddress(row.getShippingAddress())
                 .shippingStatus(row.getShippingStatus())
                 .registeredAt(row.getRegisteredAt())
-                .modifiedAt(row.getModifiedAt())
-                .username(row.getUsername())
+                .username(row.getUsername()) //상세보기 조회로 이동
                 .build();
     }
 }
-
