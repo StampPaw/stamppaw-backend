@@ -38,10 +38,11 @@ public class WalkService {
     private final UserBadgeService userBadgeService;
     private final UserScoreService userScoreService;
 
-    public Page<Walk> search(WalkSearchRequest req) {
+    public Page<Walk> search(Long userId, String memo, int page, int size) {
         return walkRepository.searchByKeyword(
-                req.getKeyword(),
-                PageRequest.of(req.getPage(), req.getSize())
+                userId,
+                memo,
+                PageRequest.of(page, size)
         );
     }
 

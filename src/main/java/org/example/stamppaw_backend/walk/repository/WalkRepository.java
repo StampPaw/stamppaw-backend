@@ -19,11 +19,12 @@ public interface WalkRepository extends JpaRepository<Walk, Long> {
     List<Walk> findAllByUser_Id(Long userId);
 
     @Query("""
-                SELECT w FROM Walk w
-                WHERE (:keyword IS NULL OR w.memo LIKE %:keyword%)
-                ORDER BY w.startTime DESC
+             SELECT w FROM Walk w
+             WHERE w.user.id = :userId
+               AND (:keyword IS NULL OR w.memo LIKE %:keyword%)
+             ORDER BY w.startTime DESC
             """)
-    Page<Walk> searchByKeyword(@Param("keyword") String keyword, Pageable pageable);
+    Page<Walk> searchByKeyword(@Param("userId") Long userId, @Param("keyword") String keyword, Pageable pageable);
 
     Page<Walk> findAllByUserIdAndStatusOrderByStartTimeDesc(Long userId, WalkStatus status, Pageable pageable);
 

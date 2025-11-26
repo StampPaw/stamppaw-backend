@@ -11,15 +11,15 @@ import java.time.LocalDateTime;
 public class WalkSearchResponse {
 
     private Long id;
-    private String memo;
-    private String thumbnailUrl; // 사진 1장 또는 null
+    private String title;
+    private String image; // 사진 1장 또는 null
     private LocalDateTime startTime;
 
     public static WalkSearchResponse fromEntity(Walk walk) {
         return WalkSearchResponse.builder()
                 .id(walk.getId())
-                .memo(walk.getMemo())
-                .thumbnailUrl(
+                .title(walk.getMemo())
+                .image(
                         walk.getPhotos() != null && !walk.getPhotos().isEmpty()
                                 ? walk.getPhotos().get(0).getPhotoUrl()
                                 : null
