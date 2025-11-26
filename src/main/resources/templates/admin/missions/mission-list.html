@@ -6,10 +6,12 @@
 
     <div class="page-header">
         <h2>미션 목록</h2>
-        <!--        <a th:href="@{/admin/missions/create}" class="btn-primary btn-lg">미션 생성</a>-->
-        <button class="btn-primary" onclick="assignToday()">
-            전체 유저에게 미션 즉시 할당
-        </button>
+        <div class="page-header">
+            <a th:href="@{/admin/missions/create}" class="btn-primary">미션 생성</a>
+            <button class="btn-primary" onclick="assignToday()">
+                전체 유저에게 미션 즉시 할당
+            </button>
+        </div>
     </div>
 
     <div style="margin: 0 15px;">
@@ -33,12 +35,12 @@
                     <a th:href="@{|/admin/missions/${mission.id}/edit|}"
                        class="btn-third">수정</a>
 
-                    <!--                    <a th:onclick="@{|deleteMission(${mission.id})|}" class="btn-third">삭제</a>-->
+                    <a th:onclick="@{|deleteMission(${mission.id})|}" class="btn-third">삭제</a>
 
-                    <button class="btn-primary"
-                            th:onclick="'assignMission(' + ${mission.id} + ')'">
-                        할당
-                    </button>
+                    <!--                    <button class="btn-primary"-->
+                    <!--                            th:onclick="'assignMission(' + ${mission.id} + ')'">-->
+                    <!--                        할당-->
+                    <!--                    </button>-->
                 </td>
             </tr>
 
